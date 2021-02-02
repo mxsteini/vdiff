@@ -63,7 +63,7 @@ q.on('end', async function () {
   } else {
     domains.push(options.domain)
   }
-  createHTML()
+  createDiffList()
   better.info('runtests - ', 'finished')
   for (let browserName of browsers) {
     if ((await browser[browserName].pages()).length > 0) {
@@ -171,6 +171,39 @@ function createImageLinks (workDir, filename) {
   return diffLink
 }
 
+function createDiffList () {
+  for (let browserName of browsers) {
+    for (let domain of domains) {
+      let workDir = tempDir + domain + '/' + browserName + '/'
+      let diffList = []
+      for (let singleTest of configuration['targets'][domain]['list']) {
+        let test = {}
+        if (typeof singleTest == 'string') {
+          test = {
+            steps: [{ action: 'none' }],
+            path: singleTest,
+          }
+        } else {
+          test = singleTest
+        }
+        let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
+        let stepCounter = 0
+        for (let step of test.steps) {
+          diffList.push({
+            stepName: filename + '_' + (stepCounter),
+            diffHtml: workDir + 'html/' + filename + '_' + (stepCounter) + '.html',
+            diffImage: workDir + 'diff/' + filename + '_' + (stepCounter) + '.png'
+          })
+          stepCounter++
+        }
+      }
+      let diffListTemplate = fs.readFileSync(templatesDir + 'diffList.html', 'utf8')
+      let diffListHtml = Mustache.render(diffListTemplate, {diffList:diffList})
+      fs.writeFileSync(workDir + 'diffList.html', diffListHtml)
+    }
+  }
+}
+
 function main () {
   process.setMaxListeners(0)
 
@@ -193,6 +226,7 @@ function main () {
       browsers = options.browser
     }
   }
+
   // createHTML()
   createDirectoryStructur()
   distributeHtmlFiles()
@@ -272,30 +306,30 @@ function main () {
 
             better.info('starting tests: ' + browserName + ' ' + domain)
             for (let singleTest of configuration['targets'][domain]['list']) {
-              q.push(async  function () {
-                let path = (typeof singleTest == 'string') ? singleTest : singleTest.path
-                let filename = path.replace(/ /g, '_').replace(/\//g, '_')
+              let test = {}
+              if (typeof singleTest == 'string') {
+                test = {
+                  steps: [{ action: 'none' }],
+                  path: singleTest,
+                  waitfor: options.waitfor ? options.waitfor : 0
+                }
+              } else {
+                test = singleTest
+              }
+              q.push(async function () {
+                let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
                 let pageCollector = []
                 for (let target of processTargets) {
                   pageCollector.push(
-                    new Promise(async function(resolve, reject) {
+                    new Promise(async function (resolve, reject) {
                       const page = await browser[browserName].newPage()
 
-                      await page.goto(target.url + path)
+                      await page.goto(target.url + test.path)
 
-                      if (typeof singleTest == 'string') {
-                        let filePath = workDir + target.target + '/' + filename + '.png'
-                        await processAction(page, {
-                          path: path,
-                          action: 'none',
-                          waitFor: 100
-                        }, filePath, configuration.browser[browserName].height)
-                      } else {
-                        let stepCounter = 0
-                        for (let step of singleTest.steps) {
-                          let filePath = workDir + target.target + '/' + filename + '_' + (stepCounter++) + '.png'
-                          await processAction(page, step, filePath, configuration.browser[browserName].height)
-                        }
+                      let stepCounter = 0
+                      for (let step of test.steps) {
+                        let filePath = workDir + target.target + '/' + filename + '_' + (stepCounter++) + '.png'
+                        await processAction(page, step, filePath, configuration.browser[browserName].height)
                       }
                       await page.close()
                       resolve()
@@ -305,23 +339,14 @@ function main () {
                 await Promise.all(pageCollector)
 
                 let collector = []
-                if (typeof singleTest == 'string') {
+                let stepCounter = 0
+                for (let step of test.steps) {
                   collector.push(
-                    createDiff(workDir, filename, {
-                      path: path,
-                      action: 'none'
-                    }, target1url, target2url))
-                } else {
-                  let stepCounter = 0
-                  for (let step of singleTest.steps) {
-                    step.path = singleTest.path
-                    collector.push(
-                      createDiff(
-                        workDir,
-                        filename + '_' + (stepCounter++),
-                        step, target1url, target2url
-                      ))
-                  }
+                    createDiff(
+                      workDir,
+                      filename + '_' + (stepCounter++),
+                      step, target1url, target2url
+                    ))
                 }
                 return Promise.all(collector)
               })
@@ -358,16 +383,7 @@ function createDiff (workDir, filename, singleTest, target1url, target2url) {
       data: data
     })
     fs.writeFileSync(diffHtml, diffHTML)
-
-    let diffLink = '<div>' +
-      filename + '<br>' +
-      '<a href="' + diffHtml + '" target="diff">' +
-      '<img width="200" src="' + diffImage + '" />' +
-      '</a></div>' + '\n'
-
-    console.log('runtests: 367', workDir + 'html/linkList.txt')
-    fs.appendFileSync(workDir + 'html/linkList.txt', diffLink)
-
+    
     const diff = jimp.diff(images[0], images[1])
     return diff.image.writeAsync(diffImage)
   })
