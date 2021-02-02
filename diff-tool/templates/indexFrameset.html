@@ -1,0 +1,13 @@
+<html>
+<head>
+    <title>{{data.title}}</title>
+    <link href="{{{data.allCss}}}" media="all" rel="stylesheet" type="text/css">
+    {{#data.specCss}}
+    <link href="{{{data.specCss}}}" media="all" rel="stylesheet" type="text/css">
+    {{/data.specCss}}
+</head>
+<frameset rows="30,*">  <!-- Frameset-Definition -->
+    <frame name="{{data.index.target}}" src="{{{data.index.href}}}">
+    <frame name="{{data.target.target}}" src="{{{data.target.href}}}">
+</frameset>
+</html>

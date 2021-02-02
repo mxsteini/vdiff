@@ -1,0 +1,77 @@
+{
+	"default": {
+		"browser": [
+			"fullpage",
+			"ipad"
+		],
+		"target1": "live",
+		"target2": "dev",
+		"domain": "project",
+		"debug": 0
+	},
+	"browser": {
+		"fullpage": {
+			"width": 1200,
+			"height": 0,
+			"isMobile": 0
+		},
+		"fullphone": {
+			"width": 575,
+			"height": 0,
+			"isMobile": 1
+		},
+		"fulltablet": {
+			"width": 992,
+			"height": 0,
+			"isMobile": 1
+		},
+		"desktop": {
+			"width": 1200,
+			"height": 800,
+			"isMobile": 0
+		},
+		"phoneFull": {
+			"width": 640,
+			"height": 0,
+			"isMobile": 1
+		},
+		"ipad": {
+			"width": 768,
+			"height": 1024,
+			"isMobile": 1
+		},
+		"iphone": {
+			"width": 375,
+			"height": 667,
+			"isMobile": 1
+		}
+	},
+	"targets": {
+		"project": {
+			"target": {
+				"live": "https://www.project.com",
+				"new": "https://new.project.com",
+				"dev": "https://dev.project.com",
+				"local": "https://project.localhost"
+			},
+			"initialActions": {
+				"path": "/",
+				"steps": [
+					{
+						"action": "",
+						"waitFor": 500
+					},
+					{
+						"action": "click",
+						"action_selector": "button",
+						"waitFor": 100
+					}
+				]
+			},
+			"list": [
+				"/impressumg",
+				"/kontakt"
+			]
+		}
+	}
+}

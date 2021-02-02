@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script type="text/javascript" src="{{{data.projectPath}}}/diff-tool/js/comparisons.js"></script>
+  <link href="{{{data.allCss}}}" media="all" rel="stylesheet" type="text/css">
+  {{#data.specCss}}
+  <link href="{{{data.specCss}}}" media="all" rel="stylesheet" type="text/css">
+  {{/data.specCss}}
+
+</head>
+<body class="diff">
+<div>
+  {{target1}}: <a href="{{{target1url}}}" target="_blank">{{target1url}}</a><br>
+  {{target2}}: <a href="{{{target2url}}}" target="_blank">{{target2url}}</a>
+</div>
+<div class="img-comp-container">
+  <div class="img-comp-img">
+    <span>{{target2}}</span>
+    <img src="{{{image2}}}" width="600">
+  </div>
+  <div class="img-comp-img img-comp-overlay">
+    <span>{{target1}}</span>
+    <img src="{{{image1}}}" width="600">
+  </div>
+</div>
+<script>
+  initComparisons();
+</script>
+</body>
+</html>
