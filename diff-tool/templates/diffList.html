@@ -6,11 +6,26 @@
     <link href="../../../diff-tool/css/all.css" media="all" rel="stylesheet" type="text/css">
 </head>
 <body class="diff-index">
-{{#diffList}}
-<div>
-    {{stepName}}<br>
-    <a href="{{diffHtml}}" target="diff"><img src="{{diffImage}}" width="200"/></a>
+<div class="switches">
+    <label for="initial">Initial</label><label for="steps">Steps</label>
 </div>
-{{/diffList}}
+<input id="initial" type="checkbox" style="display: block" class="steps-input" checked="checked">
+<div class="steps-box">Initial Steps
+    {{#diffList.initials}}
+    <div>
+        {{stepName}}<br>
+        <a href="{{diffHtml}}" target="diff"><img src="{{diffImage}}" width="200"/></a>
+    </div>
+    {{/diffList.initials}}
+</div>
+<input id="steps" type="checkbox" style="display: block" class="steps-input">Other Steps
+<div class="steps-box">
+    {{#diffList.steps}}
+    <div>
+        {{stepName}}<br>
+        <a href="{{diffHtml}}" target="diff"><img src="{{diffImage}}" width="200"/></a>
+    </div>
+    {{/diffList.steps}}
+</div>
 </body>
 </html>

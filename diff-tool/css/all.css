@@ -1,5 +1,31 @@
 * {box-sizing: border-box;}
 
+.switches {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+}
+
+.switches label {
+  display: block;
+  flex-grow: 1;
+  border: 1px solid grey;
+  text-align: center;
+  padding: 10px;
+  margin: 0 5px;
+}
+.switches label:hover {
+  cursor: pointer;
+}
+.steps-input + .steps-box {
+  display: block;
+}
+
+.steps-input:checked + .steps-box {
+  display: none;
+}
+
+
 .diff-index img {
   max-height: 300px;
   max-width: 280px;

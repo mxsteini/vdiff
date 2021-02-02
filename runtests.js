@@ -72,17 +72,6 @@ q.on('end', async function () {
   }
 })
 
-function createHTML () {
-  for (let domain of domains) {
-    for (let browserName of browsers) {
-      let workDir = tempDir + domain + '/' + browserName + '/'
-      fs.createReadStream(templatesDir + 'diffIndex.html')
-        .pipe(replace(/%result%/ig, fs.readFileSync(workDir + 'html/linkList.txt')))
-        .pipe(fs.createWriteStream(workDir + '/diffList.html'))
-    }
-  }
-}
-
 function createDirectoryStructur () {
   for (let domain in configuration['targets']) {
     for (let browserName in configuration['browser']) {
@@ -159,23 +148,28 @@ function distributeHtmlFiles () {
   fs.writeFileSync(tempDir + 'domainList.html', indexListHTML)
 }
 
-function createImageLinks (workDir, filename) {
-  let diffImage = workDir + 'diff/' + filename + '.png'
-  let diffHtml = workDir + 'html/' + filename + '.html'
-
-  let diffLink = '<div>' +
-    filename + '<br>' +
-    '<a href="' + diffHtml + '" target="diff">' +
-    '<img width="200" src="' + diffImage + '" />' +
-    '</a></div>'
-  return diffLink
-}
-
 function createDiffList () {
   for (let browserName of browsers) {
     for (let domain of domains) {
       let workDir = tempDir + domain + '/' + browserName + '/'
-      let diffList = []
+      let diffList = {
+        initials: [],
+        steps: []
+      }
+      if (!!configuration['targets'][domain]['initialActions']) {
+        if (configuration['targets'][domain]['initialActions'].path) {
+          let stepCounter = 0
+          let filename = 'initial'
+          for (let step of configuration['targets'][domain]['initialActions']['steps']) {
+            diffList.initials.push({
+              stepName: filename + '_' + (stepCounter),
+              diffHtml: workDir + 'html/' + filename + '_' + (stepCounter) + '.html',
+              diffImage: workDir + 'diff/' + filename + '_' + (stepCounter) + '.png'
+            })
+            stepCounter++
+          }
+        }
+      }
       for (let singleTest of configuration['targets'][domain]['list']) {
         let test = {}
         if (typeof singleTest == 'string') {
@@ -189,7 +183,7 @@ function createDiffList () {
         let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
         let stepCounter = 0
         for (let step of test.steps) {
-          diffList.push({
+          diffList.steps.push({
             stepName: filename + '_' + (stepCounter),
             diffHtml: workDir + 'html/' + filename + '_' + (stepCounter) + '.html',
             diffImage: workDir + 'diff/' + filename + '_' + (stepCounter) + '.png'
@@ -198,7 +192,7 @@ function createDiffList () {
         }
       }
       let diffListTemplate = fs.readFileSync(templatesDir + 'diffList.html', 'utf8')
-      let diffListHtml = Mustache.render(diffListTemplate, {diffList:diffList})
+      let diffListHtml = Mustache.render(diffListTemplate, { diffList: diffList })
       fs.writeFileSync(workDir + 'diffList.html', diffListHtml)
     }
   }
@@ -227,7 +221,8 @@ function main () {
     }
   }
 
-  // createHTML()
+  // createDiffList()
+  // return
   createDirectoryStructur()
   distributeHtmlFiles()
   // return
@@ -361,6 +356,15 @@ function main () {
 
 main()
 
+/**
+ *
+ * @param workDir
+ * @param filename
+ * @param singleTest
+ * @param target1url
+ * @param target2url
+ * @returns {Promise<unknown[] | void>}
+ */
 function createDiff (workDir, filename, singleTest, target1url, target2url) {
   let target1FileName = workDir + options.target1 + '/' + filename + '.png'
   let target2FileName = workDir + options.target2 + '/' + filename + '.png'
@@ -370,7 +374,6 @@ function createDiff (workDir, filename, singleTest, target1url, target2url) {
     jimp.read(target2FileName)
   ]).then(images => {
     let diffHtml = workDir + 'html/' + filename + '.html'
-
 
     let diffTemplate = fs.readFileSync(templatesDir + 'diff.html', 'utf8')
     let diffHTML = Mustache.render(diffTemplate, {
@@ -383,7 +386,7 @@ function createDiff (workDir, filename, singleTest, target1url, target2url) {
       data: data
     })
     fs.writeFileSync(diffHtml, diffHTML)
-    
+
     const diff = jimp.diff(images[0], images[1])
     return diff.image.writeAsync(diffImage)
   })
@@ -391,8 +394,11 @@ function createDiff (workDir, filename, singleTest, target1url, target2url) {
 }
 
 /**
+ *
  * @param page
  * @param step
+ * @param filePath
+ * @param height
  * @returns {Promise<void>}
  */
 async function processAction (page, step, filePath, height) {
