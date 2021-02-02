@@ -17,6 +17,9 @@ betterLogging(better)
 
 
 const projectDir = __dirname + '/'
+const tempDir = projectDir + 'tmp/'
+const templatesDir = projectDir + 'diff-tool/templates/'
+
 let configuration = loadJsonFile.sync(projectDir + 'configuration.json')
 var options = minimist(process.argv.slice(2), {
   string: ['target1', 'target2', 'conc', 'domain', 'single', 'class', 'skipTarget', 'mode', 'browser', 'debug'],
@@ -44,12 +47,6 @@ let data = {
 
 let browsers = []  // array for brawsernames
 let browser = [] // array for browserobjects
-let pages = [] // counter for open pages per browser
-let pushCounter = 0
-let templatesDir = projectDir + 'diff-tool/templates/'
-// let target1url = ''
-// let target2url = ''
-// let processTargets = []
 let domains = []
 
 let q = queue()
@@ -78,10 +75,10 @@ q.on('end', async function () {
 function createHTML () {
   for (let domain of domains) {
     for (let browserName of browsers) {
-      let tempDir = projectDir + 'tmp/' + domain + '/' + browserName + '/'
+      let workDir = tempDir + domain + '/' + browserName + '/'
       fs.createReadStream(templatesDir + 'diffIndex.html')
-        .pipe(replace(/%result%/ig, fs.readFileSync(tempDir + 'html/linkList.txt')))
-        .pipe(fs.createWriteStream(tempDir + '/diffList.html'))
+        .pipe(replace(/%result%/ig, fs.readFileSync(workDir + 'html/linkList.txt')))
+        .pipe(fs.createWriteStream(workDir + '/diffList.html'))
     }
   }
 }
@@ -89,17 +86,17 @@ function createHTML () {
 function createDirectoryStructur () {
   for (let domain in configuration['targets']) {
     for (let browserName in configuration['browser']) {
-      fsExtra.ensureDirSync(projectDir + 'tmp/' + domain + '/' + browserName + '/diff')
-      fsExtra.ensureDirSync(projectDir + 'tmp/' + domain + '/' + browserName + '/html')
+      let workDir = tempDir + domain + '/' + browserName + '/'
+      fsExtra.ensureDirSync(workDir + 'diff')
+      fsExtra.ensureDirSync(workDir + 'html')
       for (let key in configuration['targets'][domain].target) {
-        fsExtra.ensureDirSync(projectDir + 'tmp/' + domain + '/' + browserName + '/' + key)
+        fsExtra.ensureDirSync(workDir + key)
       }
     }
   }
 }
 
 function distributeHtmlFiles () {
-
   let domainList = []
   for (let domain in configuration['targets']) {
     domainList.push({
@@ -125,18 +122,7 @@ function distributeHtmlFiles () {
       }
       let framesetTemplate = fs.readFileSync(projectDir + '/diff-tool/templates/diffFrameset.html', 'utf8')
       let framesetHTML = Mustache.render(framesetTemplate, { data: data })
-      fs.writeFileSync(projectDir + '/tmp/' + domain + '/' + browserName + '/index.html', framesetHTML)
-      // let linkList = []
-      // if (!! configuration['targets'][domain]['initialActions']['path']) {
-      //   let step = 0
-      //   let tempDir = projectDir + 'tmp/' + domain + '/' + browserName + '/'
-      //   for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
-      //     let filename = 'initial_' + step++
-      //     let link = createImageLinks(tempDir, filename)
-      //     linkList.push(link)
-      //   }
-      // }
-
+      fs.writeFileSync(tempDir + domain + '/' + browserName + '/index.html', framesetHTML)
     }
     let framesetTemplate = fs.readFileSync(projectDir + '/diff-tool/templates/indexFrameset.html', 'utf8')
     data.index = {
@@ -148,7 +134,7 @@ function distributeHtmlFiles () {
       'href': ''
     }
     let framesetHTML = Mustache.render(framesetTemplate, { data: data })
-    fs.writeFileSync(projectDir + '/tmp/' + domain + '/index.html', framesetHTML)
+    fs.writeFileSync(tempDir + domain + '/index.html', framesetHTML)
 
     let indexListTemplate = fs.readFileSync(projectDir + './diff-tool/templates/linkIndex.html', 'utf8')
     let indexListHTML = Mustache.render(indexListTemplate, { linkList: browserList, data: data })
@@ -156,7 +142,7 @@ function distributeHtmlFiles () {
   }
 
 
-  let framesetTemplate = fs.readFileSync(projectDir + '/diff-tool/templates/indexFrameset.html', 'utf8')
+  let framesetTemplate = fs.readFileSync(templatesDir + 'indexFrameset.html', 'utf8')
   data.index = {
     'target': 'domainList',
     'href': './domainList.html'
@@ -166,16 +152,16 @@ function distributeHtmlFiles () {
     'href': ''
   }
   let framesetHTML = Mustache.render(framesetTemplate, { data: data })
-  fs.writeFileSync(projectDir + '/tmp/index.html', framesetHTML)
+  fs.writeFileSync(tempDir + 'index.html', framesetHTML)
 
-  let indexListTemplate = fs.readFileSync(projectDir + './diff-tool/templates/linkIndex.html', 'utf8')
+  let indexListTemplate = fs.readFileSync(templatesDir + 'linkIndex.html', 'utf8')
   let indexListHTML = Mustache.render(indexListTemplate, { linkList: domainList, data: data })
-  fs.writeFileSync(projectDir + '/tmp/domainList.html', indexListHTML)
+  fs.writeFileSync(tempDir + 'domainList.html', indexListHTML)
 }
 
-function createImageLinks (tempDir, filename) {
-  let diffImage = tempDir + 'diff/' + filename + '.png'
-  let diffHtml = tempDir + 'html/' + filename + '.html'
+function createImageLinks (workDir, filename) {
+  let diffImage = workDir + 'diff/' + filename + '.png'
+  let diffHtml = workDir + 'html/' + filename + '.html'
 
   let diffLink = '<div>' +
     filename + '<br>' +
@@ -233,10 +219,10 @@ function main () {
 
     puppeteer.launch(puppeteerConfig)
       .then(async result => {
-        browser[browserName] = result
+          browser[browserName] = result
 
           for (let domain of domains) {
-            let tempDir = projectDir + 'tmp/' + domain + '/' + browserName + '/'
+            let workDir = tempDir + domain + '/' + browserName + '/'
             let processTargets = []
 
             let target1url = configuration['targets'][domain]['target'][options.target1]
@@ -255,8 +241,8 @@ function main () {
               })
             }
 
-            if (fs.existsSync(tempDir + '/html/linkList.txt')) {
-              fs.unlinkSync(tempDir + '/html/linkList.txt')
+            if (fs.existsSync(workDir + '/html/linkList.txt')) {
+              fs.unlinkSync(workDir + '/html/linkList.txt')
             }
             if (!!configuration['targets'][domain]['initialActions']) {
               if (configuration['targets'][domain]['initialActions'].path) {
@@ -269,7 +255,7 @@ function main () {
                   for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
                     let filename = 'initial_' + step++
 
-                    let filePath = tempDir + target.target + '/' + filename + '.png'
+                    let filePath = workDir + target.target + '/' + filename + '.png'
                     await processAction(page, singleTest, filePath, configuration.browser[browserName].height)
                   }
                   await page.close()
@@ -278,7 +264,7 @@ function main () {
                 for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
                   let filename = 'initial_' + step++
                   q.push(function () {
-                    return createDiff(tempDir, filename, singleTest, target1url, target2url)
+                    return createDiff(workDir, filename, singleTest, target1url, target2url)
                   })
                 }
               }
@@ -286,56 +272,61 @@ function main () {
 
             better.info('starting tests: ' + browserName + ' ' + domain)
             for (let singleTest of configuration['targets'][domain]['list']) {
-              q.push(async function () {
+              q.push(async  function () {
                 let path = (typeof singleTest == 'string') ? singleTest : singleTest.path
                 let filename = path.replace(/ /g, '_').replace(/\//g, '_')
+                let pageCollector = []
                 for (let target of processTargets) {
-                  try {
-                    const page = await browser[browserName].newPage()
+                  pageCollector.push(
+                    new Promise(async function(resolve, reject) {
+                      const page = await browser[browserName].newPage()
 
-                    await page.goto(target.url + path)
+                      await page.goto(target.url + path)
 
-                    if (typeof singleTest == 'string') {
-                      let filePath = tempDir + target.target + '/' + filename + '.png'
-                      await processAction(page, {
-                        path: path,
-                        action: 'none',
-                        waitFor: 100
-                      }, filePath, configuration.browser[browserName].height)
-                    } else {
-                      let stepCounter = 0
-                      for (let step of singleTest.steps) {
-                        let filePath = tempDir + target.target + '/' + filename + '_' + (stepCounter++) + '.png'
-                        await processAction(page, step, filePath, configuration.browser[browserName].height)
+                      if (typeof singleTest == 'string') {
+                        let filePath = workDir + target.target + '/' + filename + '.png'
+                        await processAction(page, {
+                          path: path,
+                          action: 'none',
+                          waitFor: 100
+                        }, filePath, configuration.browser[browserName].height)
+                      } else {
+                        let stepCounter = 0
+                        for (let step of singleTest.steps) {
+                          let filePath = workDir + target.target + '/' + filename + '_' + (stepCounter++) + '.png'
+                          await processAction(page, step, filePath, configuration.browser[browserName].height)
+                        }
                       }
-                    }
-
-                    await page.close()
-                  } catch (error) {
-                    better.warn('error in getting page')
-                    better.warn('browser:' + browserName)
-                    better.warn('path:' + target.url + path)
-                    console.log(error)
-                  }
+                      await page.close()
+                      resolve()
+                    })
+                  )
                 }
+                await Promise.all(pageCollector)
 
+                let collector = []
                 if (typeof singleTest == 'string') {
-                  return createDiff(tempDir, filename, {
-                    path: path,
-                    action: 'none'
-                  }, target1url, target2url)
+                  collector.push(
+                    createDiff(workDir, filename, {
+                      path: path,
+                      action: 'none'
+                    }, target1url, target2url))
                 } else {
                   let stepCounter = 0
                   for (let step of singleTest.steps) {
                     step.path = singleTest.path
-                    await createDiff(tempDir,
-                      filename + '_' + (stepCounter++),
-                      step, target1url, target2url)
+                    collector.push(
+                      createDiff(
+                        workDir,
+                        filename + '_' + (stepCounter++),
+                        step, target1url, target2url
+                      ))
                   }
                 }
-                return
+                return Promise.all(collector)
               })
             }
+            better.info('waiting for queue')
           }
         }
       )
@@ -345,15 +336,15 @@ function main () {
 
 main()
 
-function createDiff (tempDir, filename, singleTest, target1url, target2url) {
-  let target1FileName = tempDir + options.target1 + '/' + filename + '.png'
-  let target2FileName = tempDir + options.target2 + '/' + filename + '.png'
-  let diffImage = tempDir + 'diff/' + filename + '.png'
+function createDiff (workDir, filename, singleTest, target1url, target2url) {
+  let target1FileName = workDir + options.target1 + '/' + filename + '.png'
+  let target2FileName = workDir + options.target2 + '/' + filename + '.png'
+  let diffImage = workDir + 'diff/' + filename + '.png'
   return Promise.all([
     jimp.read(target1FileName),
     jimp.read(target2FileName)
   ]).then(images => {
-    let diffHtml = tempDir + 'html/' + filename + '.html'
+    let diffHtml = workDir + 'html/' + filename + '.html'
 
 
     let diffTemplate = fs.readFileSync(templatesDir + 'diff.html', 'utf8')
@@ -374,7 +365,8 @@ function createDiff (tempDir, filename, singleTest, target1url, target2url) {
       '<img width="200" src="' + diffImage + '" />' +
       '</a></div>' + '\n'
 
-    fs.appendFileSync(tempDir + 'html/linkList.txt', diffLink)
+    console.log('runtests: 367', workDir + 'html/linkList.txt')
+    fs.appendFileSync(workDir + 'html/linkList.txt', diffLink)
 
     const diff = jimp.diff(images[0], images[1])
     return diff.image.writeAsync(diffImage)
