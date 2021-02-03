@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const fs = require('fs')
 const puppeteer = require('puppeteer')
 const fsExtra = require('fs-extra')
@@ -11,14 +10,19 @@ const Mustache = require('mustache')
 const { CustomInstance } = require('better-logging')
 const betterLogging = CustomInstance(console)
 const { performance } = require('perf_hooks')
+const path = require('path')
+
 
 const better = {}
 betterLogging(better)
 
 
+const diffToolDir = path.dirname(__filename)
+const resourcesDir = path.join(diffToolDir, 'resources')
+const templatesDir = path.join(resourcesDir, 'templates')
+
 const projectDir = __dirname + '/'
 const tempDir = projectDir + 'tmp/'
-const templatesDir = projectDir + 'diff-tool/templates/'
 
 let configuration = loadJsonFile.sync(projectDir + 'configuration.json')
 var options = minimist(process.argv.slice(2), {
@@ -41,7 +45,8 @@ Error.stackTraceLimit = options.debug
 
 let data = {
   'projectPath': projectDir,
-  'allCss': projectDir + './diff-tool/css/all.css',
+  'resourcesPath': resourcesDir,
+  'allCss': path.join(resourcesDir, 'css/all.css'),
   'specCss': ''
 }
 
@@ -75,11 +80,11 @@ q.on('end', async function () {
 function createDirectoryStructur () {
   for (let domain in configuration['targets']) {
     for (let browserName in configuration['browser']) {
-      let workDir = tempDir + domain + '/' + browserName + '/'
-      fsExtra.ensureDirSync(workDir + 'diff')
-      fsExtra.ensureDirSync(workDir + 'html')
+      let workDir = path.join(tempDir, domain, browserName)
+      fsExtra.ensureDirSync(path.join(workDir, 'diff'))
+      fsExtra.ensureDirSync(path.join(workDir, 'html'))
       for (let key in configuration['targets'][domain].target) {
-        fsExtra.ensureDirSync(workDir + key)
+        fsExtra.ensureDirSync(path.join(workDir, key))
       }
     }
   }
@@ -109,11 +114,11 @@ function distributeHtmlFiles () {
         'target': 'diff',
         'href': ''
       }
-      let framesetTemplate = fs.readFileSync(projectDir + '/diff-tool/templates/diffFrameset.html', 'utf8')
+      let framesetTemplate = fs.readFileSync(path.join(templatesDir, 'diffFrameset.html'), 'utf8')
       let framesetHTML = Mustache.render(framesetTemplate, { data: data })
-      fs.writeFileSync(tempDir + domain + '/' + browserName + '/index.html', framesetHTML)
+      fs.writeFileSync(path.join(tempDir, domain, browserName, '/index.html'), framesetHTML)
     }
-    let framesetTemplate = fs.readFileSync(projectDir + '/diff-tool/templates/indexFrameset.html', 'utf8')
+    let framesetTemplate = fs.readFileSync(path.join(templatesDir, 'indexFrameset.html'), 'utf8')
     data.index = {
       'target': 'browserList',
       'href': './browserList.html'
@@ -123,15 +128,15 @@ function distributeHtmlFiles () {
       'href': ''
     }
     let framesetHTML = Mustache.render(framesetTemplate, { data: data })
-    fs.writeFileSync(tempDir + domain + '/index.html', framesetHTML)
+    fs.writeFileSync(path.join(tempDir, domain, 'index.html'), framesetHTML)
 
-    let indexListTemplate = fs.readFileSync(projectDir + './diff-tool/templates/linkIndex.html', 'utf8')
+    let indexListTemplate = fs.readFileSync(path.join(templatesDir, 'linkIndex.html'), 'utf8')
     let indexListHTML = Mustache.render(indexListTemplate, { linkList: browserList, data: data })
-    fs.writeFileSync(projectDir + '/tmp/' + domain + '/browserList.html', indexListHTML)
+    fs.writeFileSync(path.join(projectDir, 'tmp', domain, '/browserList.html'), indexListHTML)
   }
 
 
-  let framesetTemplate = fs.readFileSync(templatesDir + 'indexFrameset.html', 'utf8')
+  let framesetTemplate = fs.readFileSync(path.join(templatesDir, 'indexFrameset.html'), 'utf8')
   data.index = {
     'target': 'domainList',
     'href': './domainList.html'
@@ -141,17 +146,17 @@ function distributeHtmlFiles () {
     'href': ''
   }
   let framesetHTML = Mustache.render(framesetTemplate, { data: data })
-  fs.writeFileSync(tempDir + 'index.html', framesetHTML)
+  fs.writeFileSync(path.join(tempDir, 'index.html'), framesetHTML)
 
-  let indexListTemplate = fs.readFileSync(templatesDir + 'linkIndex.html', 'utf8')
+  let indexListTemplate = fs.readFileSync(path.join(templatesDir, 'linkIndex.html'), 'utf8')
   let indexListHTML = Mustache.render(indexListTemplate, { linkList: domainList, data: data })
-  fs.writeFileSync(tempDir + 'domainList.html', indexListHTML)
+  fs.writeFileSync(path.join(tempDir, 'domainList.html'), indexListHTML)
 }
 
 function createDiffList () {
   for (let browserName of browsers) {
     for (let domain of domains) {
-      let workDir = tempDir + domain + '/' + browserName + '/'
+      let workDir = path.join(tempDir, domain, browserName)
       let diffList = {
         initials: [],
         steps: []
@@ -163,8 +168,8 @@ function createDiffList () {
           for (let step of configuration['targets'][domain]['initialActions']['steps']) {
             diffList.initials.push({
               stepName: filename + '_' + (stepCounter),
-              diffHtml: workDir + 'html/' + filename + '_' + (stepCounter) + '.html',
-              diffImage: workDir + 'diff/' + filename + '_' + (stepCounter) + '.png'
+              diffHtml:  path.join(workDir, 'html', filename + '_' + (stepCounter) + '.html'),
+              diffImage: path.join(workDir, 'diff', filename + '_' + (stepCounter) + '.png')
             })
             stepCounter++
           }
@@ -185,20 +190,20 @@ function createDiffList () {
         for (let step of test.steps) {
           diffList.steps.push({
             stepName: filename + '_' + (stepCounter),
-            diffHtml: workDir + 'html/' + filename + '_' + (stepCounter) + '.html',
-            diffImage: workDir + 'diff/' + filename + '_' + (stepCounter) + '.png'
+            diffHtml:  path.join(workDir, 'html', filename + '_' + (stepCounter) + '.html'),
+            diffImage: path.join(workDir, 'diff', filename + '_' + (stepCounter) + '.png')
           })
           stepCounter++
         }
       }
-      let diffListTemplate = fs.readFileSync(templatesDir + 'diffList.html', 'utf8')
-      let diffListHtml = Mustache.render(diffListTemplate, { diffList: diffList })
-      fs.writeFileSync(workDir + 'diffList.html', diffListHtml)
+      let diffListTemplate = fs.readFileSync(path.join(templatesDir, 'diffList.html'), 'utf8')
+      let diffListHtml = Mustache.render(diffListTemplate, { diffList: diffList, data: data })
+      fs.writeFileSync(path.join(workDir, 'diffList.html'), diffListHtml)
     }
   }
 }
 
-function main () {
+function run () {
   process.setMaxListeners(0)
 
   if (options.domain === '_all_') {
@@ -224,6 +229,7 @@ function main () {
   // createDiffList()
   // return
   createDirectoryStructur()
+
   distributeHtmlFiles()
   // return
 
@@ -251,7 +257,7 @@ function main () {
           browser[browserName] = result
 
           for (let domain of domains) {
-            let workDir = tempDir + domain + '/' + browserName + '/'
+            let workDir = path.join(tempDir, domain, browserName)
             let processTargets = []
 
             let target1url = configuration['targets'][domain]['target'][options.target1]
@@ -270,30 +276,31 @@ function main () {
               })
             }
 
-            if (fs.existsSync(workDir + '/html/linkList.txt')) {
-              fs.unlinkSync(workDir + '/html/linkList.txt')
-            }
             if (!!configuration['targets'][domain]['initialActions']) {
               if (configuration['targets'][domain]['initialActions'].path) {
+                let filename = 'initial'
                 better.info('starting Initial: ' + browserName + ' ' + domain)
                 for (let target of processTargets) {
                   const page = await browser[browserName].newPage()
+                  await page.set
                   await page.goto(target.url + configuration['targets'][domain]['initialActions'].path)
-                  let step = 0
+                  let stepCounter = 0
 
                   for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
-                    let filename = 'initial_' + step++
 
-                    let filePath = workDir + target.target + '/' + filename + '.png'
+                    let filePath = path.join (workDir, target.target, filename + '_' + (stepCounter++) + '.png')
                     await processAction(page, singleTest, filePath, configuration.browser[browserName].height)
                   }
                   await page.close()
                 }
-                let step = 0
-                for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
-                  let filename = 'initial_' + step++
+                let stepCounter = 0
+                for (let step of configuration['targets'][domain]['initialActions']['steps']) {
                   q.push(function () {
-                    return createDiff(workDir, filename, singleTest, target1url, target2url)
+                    return createDiff(
+                      workDir,
+                      filename + '_' + (stepCounter++),
+                      step, target1url, target2url
+                    )
                   })
                 }
               }
@@ -323,7 +330,8 @@ function main () {
 
                       let stepCounter = 0
                       for (let step of test.steps) {
-                        let filePath = workDir + target.target + '/' + filename + '_' + (stepCounter++) + '.png'
+                        let filePath = path.join (workDir, target.target, filename + '_' + (stepCounter++) + '.png')
+
                         await processAction(page, step, filePath, configuration.browser[browserName].height)
                       }
                       await page.close()
@@ -354,8 +362,6 @@ function main () {
   }
 }
 
-main()
-
 /**
  *
  * @param workDir
@@ -366,16 +372,16 @@ main()
  * @returns {Promise<unknown[] | void>}
  */
 function createDiff (workDir, filename, singleTest, target1url, target2url) {
-  let target1FileName = workDir + options.target1 + '/' + filename + '.png'
-  let target2FileName = workDir + options.target2 + '/' + filename + '.png'
-  let diffImage = workDir + 'diff/' + filename + '.png'
+  let target1FileName = path.join(workDir, options.target1, filename + '.png')
+  let target2FileName = path.join(workDir, options.target2, filename + '.png')
+  let diffImage = path.join(workDir, 'diff/', filename + '.png')
   return Promise.all([
     jimp.read(target1FileName),
     jimp.read(target2FileName)
   ]).then(images => {
-    let diffHtml = workDir + 'html/' + filename + '.html'
+    let diffHtml = path.join(workDir, 'html', filename + '.html')
 
-    let diffTemplate = fs.readFileSync(templatesDir + 'diff.html', 'utf8')
+    let diffTemplate = fs.readFileSync(path.join(templatesDir, 'diff.html'), 'utf8')
     let diffHTML = Mustache.render(diffTemplate, {
       target1url: target1url + singleTest.path,
       target2url: target2url + (singleTest.path2 ? singleTest.path2 : singleTest.path),
@@ -461,3 +467,5 @@ async function processAction (page, step, filePath, height) {
   }
   await page.screenshot({ path: filePath, fullPage: (height == 0 ? true : false) })
 }
+
+module.exports = run
