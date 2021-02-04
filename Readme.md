@@ -1,11 +1,11 @@
 # install
 ```bash
-podman run -it --rm --init --security-opt label=disable --volume .:/var/mnt:z -w /var/mnt node:12 npm i
+npm i -P git+ssh://git@gitlab.cyperfection.de:mst/frontendtest.git
 ```
 
 
 ## usage
-./runtests.js [parameter]
+./node_modules/diff-tool/bin/difftool.js [parameter]
 
 - --target1 targetname: name of target1 
 - --target2 targetname: name of target2 
@@ -15,32 +15,6 @@ podman run -it --rm --init --security-opt label=disable --volume .:/var/mnt:z -w
 - --class classname: run tests with a named class
 - --skipTarget number: skip screenshooting target possible values 1 and 2 use this to prevent exclusions by admins
 
-
-```json
-{
-    "google": { // this is the domain
-        "target": {
-            "live": "https://www.google.com",
-            "dev": "https://dev.google.com"
-        },
-        "tests": [
-            {
-                "comment": "Home",
-                "class": [
-                    "home",
-                    "fast"
-                ],
-                "path": "/",
-                "methods": [
-                    {
-                        "name": "defaultTest"
-                    }
-                ]
-            }
-       ]
-   }
-}
-```
 
 ## example without params 
 look at tasks/ui-test.js for defaults
