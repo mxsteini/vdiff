@@ -21,14 +21,30 @@ const diffToolDir = path.dirname(__filename)
 const resourcesDir = path.join(diffToolDir, 'resources')
 const templatesDir = path.join(resourcesDir, 'templates')
 
-const projectDir = __dirname + '/'
-const tempDir = projectDir + 'tmp/'
-
-let configuration = loadJsonFile.sync(projectDir + 'configuration.json')
-var options = minimist(process.argv.slice(2), {
-  string: ['target1', 'target2', 'conc', 'domain', 'single', 'class', 'skipTarget', 'mode', 'browser', 'debug'],
+const projectDir = process.cwd()
+const tempDir = path.join(projectDir, 'tmp')
+const configFile = minimist(process.argv.slice(2), {
+  string: ['configuration'],
   default: {
-    mode: process.env.NODE_MODE || 'list',
+    configuration: process.env.NODE_CONFIGURATION || 'configuration.json',
+  }
+})['configuration']
+
+let configuration = []
+try {
+  if (fs.existsSync(path.join(projectDir, configFile))) {
+    configuration = loadJsonFile.sync(path.join(projectDir, 'configuration.json'))
+  }
+} catch (err) {
+  better.error('no configuration found')
+  better.error('you can use our template as startingpoint:')
+  better.error('cp ' + path.join(resourcesDir, 'misc', 'configuration.json.dist') + ' ' + path.join(projectDir, 'configuration.json'))
+  process.exit(1)
+}
+
+var options = minimist(process.argv.slice(2), {
+  string: ['target1', 'target2', 'conc', 'domain', 'single', 'class', 'skipTarget', 'browser', 'debug'],
+  default: {
     skipTarget: process.env.NODE_SKIP_TARGET || '',
     conc: process.env.NODE_CONC || 5,
     class: process.env.NODE_CLASS || '',
@@ -37,7 +53,7 @@ var options = minimist(process.argv.slice(2), {
     domain: process.env.NODE_DOMAIN || configuration.default.domain || '_all_',
     target1: process.env.NODE_TARGET1 || configuration.default.target1 || 'live',
     target2: process.env.NODE_TARGET2 || configuration.default.target2 || 'dev',
-    debug: process.env.NODE_TARGET2 || configuration.default.debug || 0
+    debug: process.env.NODE_DEBUG || configuration.default.debug || 0
   }
 })
 
@@ -55,7 +71,7 @@ let browser = [] // array for browserobjects
 let domains = []
 
 let q = queue()
-q.concurrency = 4
+q.concurrency = options.conc
 q.autostart = 1
 q.on('success', function () {
   better.info('remaining: ' + q.length)
@@ -168,7 +184,7 @@ function createDiffList () {
           for (let step of configuration['targets'][domain]['initialActions']['steps']) {
             diffList.initials.push({
               stepName: filename + '_' + (stepCounter),
-              diffHtml:  path.join(workDir, 'html', filename + '_' + (stepCounter) + '.html'),
+              diffHtml: path.join(workDir, 'html', filename + '_' + (stepCounter) + '.html'),
               diffImage: path.join(workDir, 'diff', filename + '_' + (stepCounter) + '.png')
             })
             stepCounter++
@@ -190,7 +206,7 @@ function createDiffList () {
         for (let step of test.steps) {
           diffList.steps.push({
             stepName: filename + '_' + (stepCounter),
-            diffHtml:  path.join(workDir, 'html', filename + '_' + (stepCounter) + '.html'),
+            diffHtml: path.join(workDir, 'html', filename + '_' + (stepCounter) + '.html'),
             diffImage: path.join(workDir, 'diff', filename + '_' + (stepCounter) + '.png')
           })
           stepCounter++
@@ -288,7 +304,7 @@ function run () {
 
                   for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
 
-                    let filePath = path.join (workDir, target.target, filename + '_' + (stepCounter++) + '.png')
+                    let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
                     await processAction(page, singleTest, filePath, configuration.browser[browserName].height)
                   }
                   await page.close()
@@ -330,7 +346,7 @@ function run () {
 
                       let stepCounter = 0
                       for (let step of test.steps) {
-                        let filePath = path.join (workDir, target.target, filename + '_' + (stepCounter++) + '.png')
+                        let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
 
                         await processAction(page, step, filePath, configuration.browser[browserName].height)
                       }
