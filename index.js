@@ -315,7 +315,7 @@ function run () {
                     return createDiff(
                       workDir,
                       filename + '_' + (stepCounter++),
-                      step, target1url, target2url
+                      configuration['targets'][domain]['initialActions'], target1url, target2url
                     )
                   })
                 }
@@ -364,7 +364,7 @@ function run () {
                     createDiff(
                       workDir,
                       filename + '_' + (stepCounter++),
-                      step, target1url, target2url
+                      test, target1url, target2url
                     ))
                 }
                 return Promise.all(collector)
