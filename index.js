@@ -43,7 +43,7 @@ var options = minimist(process.argv.slice(2), {
   string: ['target1', 'target2', 'conc', 'domain', 'single', 'class', 'skipTarget', 'browser', 'debug'],
   default: {
     skipTarget: process.env.NODE_SKIP_TARGET || '',
-    conc: process.env.NODE_CONC || 1,
+    conc: process.env.NODE_CONC || 5,
     class: process.env.NODE_CLASS || '',
     single: process.env.NODE_SINGLE || '',
     browser: process.env.NODE_browser || configuration.default.browser || 'fullpage',
@@ -81,7 +81,7 @@ q.on('end', async function () {
   } else {
     domains.push(options.domain)
   }
-  templateHelper.createDiffList(configuration, tempDir, templatesDir, browsers, data, domains)
+  templateHelper.createDiffList(configuration, tempDir, templatesDir, browsers, data, domains, options)
 
   better.info('runtests - ', 'finished')
   for (let browserName of browsers) {
@@ -115,6 +115,8 @@ function run () {
     }
   }
 
+  templateHelper.createDiffList(configuration, tempDir, templatesDir, browsers, data, domains, options)
+  return
   templateHelper.createDirectoryStructur(configuration, tempDir)
   templateHelper.distributeHtmlFiles(configuration, tempDir, templatesDir, projectDir, data)
 
