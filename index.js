@@ -115,8 +115,6 @@ function run () {
     }
   }
 
-  templateHelper.createDiffList(configuration, tempDir, templatesDir, browsers, data, domains, options)
-  return
   templateHelper.createDirectoryStructur(configuration, tempDir)
   templateHelper.distributeHtmlFiles(configuration, tempDir, templatesDir, projectDir, data)
 
@@ -184,11 +182,7 @@ function run () {
                 let stepCounter = 0
                 for (let step of configuration['targets'][domain]['initialActions']['steps']) {
                   q.push(function () {
-                    return funcs.createDiff(
-                      workDir,
-                      filename + '_' + (stepCounter++), options,
-                      configuration['targets'][domain]['initialActions'], target1url, target2url
-                    )
+                    return funcs.createDiff(workDir, filename + '_' + (stepCounter++), options)
                   })
                 }
               }
@@ -233,11 +227,7 @@ function run () {
                 let stepCounter = 0
                 for (let step of test.steps) {
                   collector.push(
-                    funcs.createDiff(
-                      workDir,
-                      filename + '_' + (stepCounter++), options,
-                      test, target1url, target2url
-                    ))
+                    funcs.createDiff(workDir, filename + '_' + (stepCounter++), options))
                 }
                 return Promise.all(collector)
               })
