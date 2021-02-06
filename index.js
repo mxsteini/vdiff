@@ -1,11 +1,10 @@
-const fs = require('fs')
 const puppeteer = require('puppeteer')
 const queue = require('queue')
-const minimist = require('minimist')
-const loadJsonFile = require('load-json-file')
+
 const { CustomInstance } = require('better-logging')
 const betterLogging = CustomInstance(console)
 const better = {}
+const configurationHelper = require('./lib/configurationHelper')
 betterLogging(better)
 
 // const { performance } = require('perf_hooks')
@@ -20,37 +19,9 @@ const templatesDir = path.join(resourcesDir, 'templates')
 
 const projectDir = process.cwd()
 const tempDir = path.join(projectDir, 'tmp')
-const configFile = minimist(process.argv.slice(2), {
-  string: ['configuration'],
-  default: {
-    configuration: process.env.NODE_CONFIGURATION || 'configuration.json',
-  }
-})['configuration']
 
-let configuration = []
-if (fs.existsSync(path.join(projectDir, configFile))) {
-  configuration = loadJsonFile.sync(path.join(projectDir, 'configuration.json'))
-} else {
-  better.error('no configuration found')
-  better.error('you can use our template as startingpoint:')
-  better.error('cp ' + path.join(resourcesDir, 'misc', 'configuration.json.dist') + ' ' + path.join(projectDir, 'configuration.json'))
-  process.exit(1)
-}
-
-var options = minimist(process.argv.slice(2), {
-  string: ['target1', 'target2', 'conc', 'domain', 'single', 'class', 'skipTarget', 'browser', 'debug'],
-  default: {
-    skipTarget: process.env.NODE_SKIP_TARGET || '',
-    conc: process.env.NODE_CONC || 5,
-    class: process.env.NODE_CLASS || '',
-    single: process.env.NODE_SINGLE || '',
-    browser: process.env.NODE_browser || configuration.default.browser || 'fullpage',
-    domain: process.env.NODE_DOMAIN || configuration.default.domain || '_all_',
-    target1: process.env.NODE_TARGET1 || configuration.default.target1 || 'live',
-    target2: process.env.NODE_TARGET2 || configuration.default.target2 || 'dev',
-    debug: process.env.NODE_DEBUG || configuration.default.debug || 0
-  }
-})
+const configuration = configurationHelper.configuration(projectDir)
+const options = configurationHelper.options(configuration)
 
 Error.stackTraceLimit = options.debug
 
@@ -91,7 +62,6 @@ q.on('end', async function () {
 })
 
 function run () {
-  process.setMaxListeners(0)
 
   if (options.domain === '_all_') {
     for (var key in configuration.targets) {
