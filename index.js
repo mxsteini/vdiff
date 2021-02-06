@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer')
 const queue = require('queue')
+const fs = require('fs')
+const imgToPDF = require('image-to-pdf')
 
 const { CustomInstance } = require('better-logging')
 const betterLogging = CustomInstance(console)
@@ -31,7 +33,6 @@ let data = {
   'specCss': ''
 }
 
-let browsers = []  // array for brawsernames
 let browser = [] // array for browserobjects
 let domains = []
 
@@ -53,9 +54,7 @@ q.on('end', async function () {
 
   better.info('runtests - ', 'finished')
   for (let browserName of browsers) {
-    if ((await browser[browserName].pages()).length > 0) {
-      browser[browserName].close()
-    }
+    browser[browserName].browser.close()
   }
   better.line('open file://' + path.join(tempDir, 'index.html'))
 })
@@ -95,9 +94,6 @@ function run () {
       ignoreHTTPSErrors: true,
       keepBrowserState: true,
       headless: true,
-      args: [
-        '--incognito'
-      ],
       defaultViewport: {
         width: parseInt(configuration.browser[browserName].width) || 0,
         height: parseInt(configuration.browser[browserName].height) || 0,
@@ -108,102 +104,136 @@ function run () {
       }
     }
 
-    puppeteer.launch(puppeteerConfig)
-      .then(async result => {
-          browser[browserName] = result
+    switch (options.mode) {
+      case 'screenshots':
+        puppeteer.launch(puppeteerConfig)
+          .then(async result => {
+              let browserObject = {}
+              browserObject.browser = await result
+              browser[browserName] = browserObject
 
-          for (let domain of domains) {
-            let workDir = path.join(tempDir, domain, browserName)
-            let processTargets = []
+              for (let domain of domains) {
+                let workDir = path.join(tempDir, domain, browserName)
+                let processTargets = []
 
-            if (options.skipTarget !== '1') {
-              processTargets.push({
-                url: configuration['targets'][domain]['target'][options.target1],
-                target: options.target1
-              })
-            }
-            if (options.skipTarget !== '2') {
-              processTargets.push({
-                url: configuration['targets'][domain]['target'][options.target2],
-                target: options.target2
-              })
-            }
-
-            if (!!configuration['targets'][domain]['initialActions']) {
-              if (configuration['targets'][domain]['initialActions'].path) {
-                let filename = 'initial'
-                better.info('starting Initial: ' + browserName + ' ' + domain)
-                for (let target of processTargets) {
-                  const context = await browser[browserName].createIncognitoBrowserContext();
-                  const page = await context.newPage();
-
-                  await page.goto(target.url + configuration['targets'][domain]['initialActions'].path)
-                  let stepCounter = 0
-
-                  for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
-                    let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
-                    await funcs.processAction(page, singleTest, filePath, configuration.browser[browserName].height, options)
-                  }
-                  await page.close()
-                }
-                let stepCounter = 0
-                for (let step of configuration['targets'][domain]['initialActions']['steps']) {
-                  q.push(function () {
-                    return funcs.createDiff(workDir, filename + '_' + (stepCounter++), options)
+                if (options.skipTarget !== '1') {
+                  processTargets.push({
+                    url: configuration['targets'][domain]['target'][options.target1],
+                    target: options.target1
                   })
                 }
-              }
-            }
-
-            better.info('starting tests: ' + browserName + ' ' + domain)
-            for (let singleTest of configuration['targets'][domain]['list']) {
-              let test = {}
-              if (typeof singleTest == 'string') {
-                test = {
-                  steps: [{ action: 'none' }],
-                  path: singleTest,
-                  waitfor: options.waitfor ? options.waitfor : 0
+                if (options.skipTarget !== '2') {
+                  processTargets.push({
+                    url: configuration['targets'][domain]['target'][options.target2],
+                    target: options.target2
+                  })
                 }
-              } else {
-                test = singleTest
-              }
-              q.push(async function () {
-                let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
-                let pageCollector = []
+
                 for (let target of processTargets) {
-                  pageCollector.push(
-                    new Promise(async function (resolve, reject) {
-                      const page = await browser[browserName].newPage()
+                  browser[browserName][target.target] = await browser[browserName].browser.createIncognitoBrowserContext()
+                }
 
-                      await page.goto(target.url + test.path)
+                if (!!configuration['targets'][domain]['initialActions']) {
+                  if (configuration['targets'][domain]['initialActions'].path) {
+                    let filename = 'initial'
+                    better.info('starting Initial: ' + browserName + ' ' + domain)
+                    for (let target of processTargets) {
+                      const page = await browser[browserName][target.target].newPage()
 
+                      await page.goto(target.url + configuration['targets'][domain]['initialActions'].path)
                       let stepCounter = 0
-                      for (let step of test.steps) {
-                        let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
 
-                        await funcs.processAction(page, step, filePath, configuration.browser[browserName].height, options)
+                      for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
+                        let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
+                        await funcs.processAction(page, singleTest, filePath, configuration.browser[browserName].height, options)
                       }
                       await page.close()
-                      resolve()
-                    })
-                  )
+                    }
+                    let stepCounter = 0
+                    for (let step of configuration['targets'][domain]['initialActions']['steps']) {
+                      q.push(function () {
+                        return funcs.createDiff(workDir, filename + '_' + (stepCounter++), options)
+                      })
+                    }
+                  }
                 }
-                await Promise.all(pageCollector)
 
-                let collector = []
-                let stepCounter = 0
-                for (let step of test.steps) {
-                  collector.push(
-                    funcs.createDiff(workDir, filename + '_' + (stepCounter++), options))
+                better.info('starting tests: ' + browserName + ' ' + domain)
+                for (let singleTest of configuration['targets'][domain]['list']) {
+                  let test = createSingleTest(singleTest)
+
+                  q.push(async function () {
+                    let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
+                    let pageCollector = []
+                    for (let target of processTargets) {
+                      pageCollector.push(
+                        new Promise(async function (resolve, reject) {
+                          const page = await browser[browserName][target.target].newPage()
+
+                          await page.goto(target.url + test.path)
+
+                          let stepCounter = 0
+                          for (let step of test.steps) {
+                            let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
+
+                            await funcs.processAction(page, step, filePath, configuration.browser[browserName].height, options)
+                          }
+                          await page.close()
+                          resolve()
+                        })
+                      )
+                    }
+                    await Promise.all(pageCollector)
+
+                    let collector = []
+                    let stepCounter = 0
+                    for (let step of test.steps) {
+                      collector.push(
+                        funcs.createDiff(workDir, filename + '_' + (stepCounter++), options))
+                    }
+                    return Promise.all(collector)
+                  })
                 }
-                return Promise.all(collector)
-              })
+                better.info('waiting for queue')
+              }
             }
-            better.info('waiting for queue')
+          )
+          .catch(err => console.log('runtests: 249', err))
+        break
+      case 'pdf':
+        let pages = []
+        for (let domain of domains) {
+          let workDir = path.join(tempDir, domain, browserName)
+
+          if (!!configuration['targets'][domain]['initialActions']) {
+            if (configuration['targets'][domain]['initialActions'].path) {
+              let filename = 'initial'
+              let stepCounter = 0
+              for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
+                for (let target of [options.target1, options.target2]) {
+                  let filePath = path.join(workDir, target, filename + '_' + (stepCounter) + '.png')
+                  pages.push(filePath)
+                }
+                stepCounter++
+              }
+            }
+          }
+          for (let singleTest of configuration['targets'][domain]['list']) {
+            let test = templateHelper.createSingleTest(singleTest)
+            let stepCounter = 0
+            for (let step of test.steps) {
+              let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
+              for (let target of [options.target1, options.target2]) {
+                let filePath = path.join(workDir, target, filename + '_' + (stepCounter) + '.png')
+                pages.push(filePath)
+               }
+              stepCounter++
+            }
           }
         }
-      )
-      .catch(err => console.log('runtests: 249', err))
+        imgToPDF(pages, 'A4').pipe(fs.createWriteStream('output.pdf'));
+        break
+    }
   }
 }
 
