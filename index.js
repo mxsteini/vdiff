@@ -20,9 +20,8 @@ const templatesDir = path.join(resourcesDir, 'templates')
 const projectDir = process.cwd()
 const tempDir = path.join(projectDir, 'tmp')
 
-const configuration = configurationHelper.configuration(projectDir)
+const configuration = configurationHelper.configuration(projectDir, resourcesDir)
 const options = configurationHelper.options(configuration)
-
 Error.stackTraceLimit = options.debug
 
 let data = {

@@ -19,6 +19,7 @@
     "puppeteer": "^6.0.0",
     "queue": "^6.0.1",
     "stream-replace": "^1.0.0",
+    "yaml": "^1.10.0",
     "yargs": "^16.2.0"
   }
 }
