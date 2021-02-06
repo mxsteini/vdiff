@@ -145,9 +145,6 @@ function run () {
             let workDir = path.join(tempDir, domain, browserName)
             let processTargets = []
 
-            let target1url = configuration['targets'][domain]['target'][options.target1]
-            let target2url = configuration['targets'][domain]['target'][options.target2]
-
             if (options.skipTarget !== '1') {
               processTargets.push({
                 url: configuration['targets'][domain]['target'][options.target1],
@@ -166,16 +163,15 @@ function run () {
                 let filename = 'initial'
                 better.info('starting Initial: ' + browserName + ' ' + domain)
                 for (let target of processTargets) {
-                  const page = await browser[browserName].newPage()
-                  await page.set
+                  const context = await browser[browserName].createIncognitoBrowserContext();
+                  const page = await context.newPage();
+
                   await page.goto(target.url + configuration['targets'][domain]['initialActions'].path)
                   let stepCounter = 0
 
                   for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
                     let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
-                    const t1 = performance.now()
                     await funcs.processAction(page, singleTest, filePath, configuration.browser[browserName].height)
-                    console.log('index: 180', performance.now() - t1)
                   }
                   await page.close()
                 }
