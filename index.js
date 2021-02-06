@@ -1,16 +1,14 @@
 const fs = require('fs')
 const puppeteer = require('puppeteer')
-const fsExtra = require('fs-extra')
 const queue = require('queue')
 const minimist = require('minimist')
 const loadJsonFile = require('load-json-file')
-const Mustache = require('mustache')
 const { CustomInstance } = require('better-logging')
 const betterLogging = CustomInstance(console)
 const better = {}
 betterLogging(better)
 
-const { performance } = require('perf_hooks')
+// const { performance } = require('perf_hooks')
 const path = require('path')
 const templateHelper = require('./lib/templateHelper')
 const funcs = require('./lib/funcs')
