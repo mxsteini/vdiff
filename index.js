@@ -135,7 +135,6 @@ function run () {
 
                 if (!!configuration['targets'][domain]['initialActions']) {
                   if (configuration['targets'][domain]['initialActions'].path) {
-                    let filename = 'initial'
                     better.info('starting Initial: ' + browserName + ' ' + domain)
                     for (let target of processTargets) {
                       const page = await browser[browserName][target.target].newPage()
@@ -144,7 +143,7 @@ function run () {
                       let stepCounter = 0
 
                       for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
-                        let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
+                        let filePath = path.join(workDir, target.target, 'initial_' + (stepCounter++) + '.png')
                         await funcs.processAction(page, singleTest, filePath, configuration.browser[browserName].height, options)
                       }
                       await page.close()
@@ -152,7 +151,7 @@ function run () {
                     let stepCounter = 0
                     for (let step of configuration['targets'][domain]['initialActions']['steps']) {
                       q.push(function () {
-                        return funcs.createDiff(workDir, filename + '_' + (stepCounter++), options)
+                        return funcs.createDiff(workDir, 'initial_' + (stepCounter++), options)
                       })
                     }
                   }
@@ -160,7 +159,7 @@ function run () {
 
                 better.info('starting tests: ' + browserName + ' ' + domain)
                 for (let singleTest of configuration['targets'][domain]['list']) {
-                  let test = createSingleTest(singleTest)
+                  let test = templateHelper.createSingleTest(singleTest, options)
 
                   q.push(async function () {
                     let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
@@ -175,7 +174,6 @@ function run () {
                           let stepCounter = 0
                           for (let step of test.steps) {
                             let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
-
                             await funcs.processAction(page, step, filePath, configuration.browser[browserName].height, options)
                           }
                           await page.close()
@@ -188,8 +186,7 @@ function run () {
                     let collector = []
                     let stepCounter = 0
                     for (let step of test.steps) {
-                      collector.push(
-                        funcs.createDiff(workDir, filename + '_' + (stepCounter++), options))
+                      collector.push(funcs.createDiff(workDir, filename + '_' + (stepCounter++), options))
                     }
                     return Promise.all(collector)
                   })
@@ -207,19 +204,17 @@ function run () {
 
           if (!!configuration['targets'][domain]['initialActions']) {
             if (configuration['targets'][domain]['initialActions'].path) {
-              let filename = 'initial'
               let stepCounter = 0
               for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
                 for (let target of [options.target1, options.target2]) {
-                  let filePath = path.join(workDir, target, filename + '_' + (stepCounter) + '.png')
-                  pages.push(filePath)
+                  pages.push(path.join(workDir, target, 'initial_' + (stepCounter) + '.png'))
                 }
                 stepCounter++
               }
             }
           }
           for (let singleTest of configuration['targets'][domain]['list']) {
-            let test = templateHelper.createSingleTest(singleTest)
+            let test = templateHelper.createSingleTest(singleTest, options)
             let stepCounter = 0
             for (let step of test.steps) {
               let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
