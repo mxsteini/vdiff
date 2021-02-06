@@ -101,6 +101,10 @@ function run () {
     }
   } else {
     domains.push(options.domain)
+    if (configuration['targets'][options.domain]['config']) {
+      options.browser = configuration['targets'][options.domain]['config']['browser']
+      options.waitFor = configuration['targets'][options.domain]['config']['waitFor']
+    }
   }
 
   if (options.browser === '_all_') {
@@ -171,7 +175,7 @@ function run () {
 
                   for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
                     let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
-                    await funcs.processAction(page, singleTest, filePath, configuration.browser[browserName].height)
+                    await funcs.processAction(page, singleTest, filePath, configuration.browser[browserName].height, options)
                   }
                   await page.close()
                 }
@@ -210,7 +214,7 @@ function run () {
                       for (let step of test.steps) {
                         let filePath = path.join(workDir, target.target, filename + '_' + (stepCounter++) + '.png')
 
-                        await funcs.processAction(page, step, filePath, configuration.browser[browserName].height)
+                        await funcs.processAction(page, step, filePath, configuration.browser[browserName].height, options)
                       }
                       await page.close()
                       resolve()
