@@ -1,18 +1,14 @@
 const puppeteer = require('puppeteer')
 const queue = require('queue')
-const fs = require('fs')
-const imgToPDF = require('image-to-pdf')
 
-const { CustomInstance } = require('better-logging')
-const betterLogging = CustomInstance(console)
-const better = {}
+const better = require('./lib/logger')
 const configurationHelper = require('./lib/configurationHelper')
-betterLogging(better)
 
 // const { performance } = require('perf_hooks')
 const path = require('path')
 const templateHelper = require('./lib/templateHelper')
 const funcs = require('./lib/funcs')
+const pdf = require('./lib/pdf')
 
 
 const diffToolDir = path.dirname(__filename)
@@ -60,7 +56,6 @@ q.on('end', async function () {
 })
 
 function run () {
-
   if (options.domain === '_all_') {
     for (var key in configuration.targets) {
       domains.push(key)
@@ -198,35 +193,7 @@ function run () {
           .catch(err => console.log('runtests: 249', err))
         break
       case 'pdf':
-        let pages = []
-        for (let domain of domains) {
-          let workDir = path.join(tempDir, domain, browserName)
-
-          if (!!configuration['targets'][domain]['initialActions']) {
-            if (configuration['targets'][domain]['initialActions'].path) {
-              let stepCounter = 0
-              for (let singleTest of configuration['targets'][domain]['initialActions']['steps']) {
-                for (let target of [options.target1, options.target2]) {
-                  pages.push(path.join(workDir, target, 'initial_' + (stepCounter) + '.png'))
-                }
-                stepCounter++
-              }
-            }
-          }
-          for (let singleTest of configuration['targets'][domain]['list']) {
-            let test = templateHelper.createSingleTest(singleTest, options)
-            let stepCounter = 0
-            for (let step of test.steps) {
-              let filename = test.path.replace(/ /g, '_').replace(/\//g, '_')
-              for (let target of [options.target1, options.target2]) {
-                let filePath = path.join(workDir, target, filename + '_' + (stepCounter) + '.png')
-                pages.push(filePath)
-               }
-              stepCounter++
-            }
-          }
-        }
-        imgToPDF(pages, 'A4').pipe(fs.createWriteStream('output.pdf'));
+        pdf.create(configuration, browserName, domains, tempDir, options)
         break
     }
   }
