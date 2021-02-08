@@ -1,0 +1,24 @@
+@page {
+	size: 21cm 29.7cm;
+	margin: 30mm 45mm 30mm 45mm;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+.page {
+	break-after: page;
+}
+
+.header {
+	height: 1cm;
+	margin: 0;
+}
+.content,
+img {
+	text-align: center;
+	height: 100%;
+	max-height: 21.7cm;
+}

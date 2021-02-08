@@ -1,32 +1,29 @@
 const queue = require('queue')
-
-const better = require('./lib/logger')
-const configurationHelper = require('./lib/configurationHelper')
-
-// const { performance } = require('perf_hooks')
 const path = require('path')
-const templateHelper = require('./lib/templateHelper')
-const pdf = require('./lib/pdf')
-const screenshot = require('./lib/screenshot')
 
 
+const projectDir = process.cwd()
 const diffToolDir = path.dirname(__filename)
 const resourcesDir = path.join(diffToolDir, 'resources')
 const templatesDir = path.join(resourcesDir, 'templates')
-
-const projectDir = process.cwd()
 const tempDir = path.join(projectDir, 'tmp')
-
-const configuration = configurationHelper.configuration(projectDir, resourcesDir)
-const options = configurationHelper.options(configuration)
-Error.stackTraceLimit = options.debug
-
 let data = {
   'projectPath': projectDir,
   'resourcesPath': resourcesDir,
   'allCss': path.join(resourcesDir, 'css/all.css'),
   'specCss': ''
 }
+
+const better = require('./lib/logger')
+const configurationHelper = require('./lib/configurationHelper')
+const templateHelper = require('./lib/templateHelper')
+const pdf = require('./lib/pdf')(templatesDir, data)
+const screenshot = require('./lib/screenshot')
+
+const configuration = configurationHelper.configuration(projectDir, resourcesDir)
+const options = configurationHelper.options(configuration)
+Error.stackTraceLimit = options.debug
+
 
 let browser = [] // array for browserobjects
 let domains = []
