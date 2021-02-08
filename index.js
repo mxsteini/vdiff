@@ -1,5 +1,6 @@
 const queue = require('queue')
 const path = require('path')
+const better = require('./lib/logger')
 
 
 const projectDir = process.cwd()
@@ -7,6 +8,7 @@ const diffToolDir = path.dirname(__filename)
 const resourcesDir = path.join(diffToolDir, 'resources')
 const templatesDir = path.join(resourcesDir, 'templates')
 const tempDir = path.join(projectDir, 'tmp')
+
 let data = {
   'projectPath': projectDir,
   'resourcesPath': resourcesDir,
@@ -14,15 +16,15 @@ let data = {
   'specCss': ''
 }
 
-const better = require('./lib/logger')
-const configurationHelper = require('./lib/configurationHelper')
-const templateHelper = require('./lib/templateHelper')
-const pdf = require('./lib/pdf')(templatesDir, data)
-const screenshot = require('./lib/screenshot')
-
-const configuration = configurationHelper.configuration(projectDir, resourcesDir)
+const configurationHelper = require('./lib/configurationHelper')(projectDir, diffToolDir)
+const configuration = configurationHelper.configuration()
 const options = configurationHelper.options(configuration)
+
+const templateHelper = require('./lib/templateHelper')(configuration, options, projectDir, diffToolDir, data)
 const sitemap = require('./lib/sitemap')(configuration, options, projectDir)
+
+const pdf = require('./lib/pdf')(templatesDir, data, templateHelper)
+const screenshot = require('./lib/screenshot')(configuration, options, templateHelper)
 
 
 Error.stackTraceLimit = options.debug
@@ -44,7 +46,7 @@ q.on('end', async function () {
   } else {
     domains.push(options.domain)
   }
-  templateHelper.createDiffList(configuration, tempDir, templatesDir, browsers, data, domains, options)
+  templateHelper.createDiffList(tempDir, templatesDir, browsers, data, domains)
 
   better.info('runtests - ', 'finished')
   for (let browserName of browsers) {
@@ -78,13 +80,13 @@ function run () {
     }
   }
 
-  templateHelper.createDirectoryStructur(configuration, tempDir)
-  templateHelper.distributeHtmlFiles(configuration, tempDir, templatesDir, projectDir, data)
+  templateHelper.createDirectoryStructur(tempDir)
+  templateHelper.distributeHtmlFiles(tempDir, templatesDir)
 
   for (let browserName of browsers) {
     switch (options.mode) {
       case 'screenshots':
-        screenshot.create(browser, configuration, browserName, domains, tempDir, options, q)
+        screenshot.create(browser, browserName, domains, tempDir, q)
         break
       case 'pdf':
         pdf.create(configuration, browserName, domains, tempDir, options)

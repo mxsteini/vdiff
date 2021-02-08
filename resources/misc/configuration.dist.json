@@ -4,6 +4,26 @@
 			"fullpage",
 			"ipad"
 		],
+		"target": {
+			"live": "https://www.project.com",
+			"new": "https://new.project.com",
+			"dev": "https://dev.project.com",
+			"local": "https://project.localhost"
+		},
+		"initialActions": {
+			"path": "/",
+			"steps": [
+				{
+					"action": "",
+					"waitFor": 500
+				},
+				{
+					"action": "click",
+					"action_selector": "button",
+					"waitFor": 100
+				}
+			]
+		},
 		"target1": "live",
 		"target2": "dev",
 		"domain": "project",
@@ -69,8 +89,8 @@
 				]
 			},
 			"list": [
-				"/impressumg",
-				"/kontakt"
+				"/imprint.html",
+				"/contact.html"
 			]
 		}
 	}
