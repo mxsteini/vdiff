@@ -22,8 +22,10 @@ const screenshot = require('./lib/screenshot')
 
 const configuration = configurationHelper.configuration(projectDir, resourcesDir)
 const options = configurationHelper.options(configuration)
-Error.stackTraceLimit = options.debug
+const sitemap = require('./lib/sitemap')(configuration, options, projectDir)
 
+
+Error.stackTraceLimit = options.debug
 
 let browser = [] // array for browserobjects
 let domains = []
@@ -86,6 +88,9 @@ function run () {
         break
       case 'pdf':
         pdf.create(configuration, browserName, domains, tempDir, options)
+        break
+      case 'sitemap':
+        sitemap.fetch(options.url, options.depth, options.testName)
         break
     }
   }
