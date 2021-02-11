@@ -22,6 +22,7 @@ const options = configurationHelper.options(configuration)
 
 const templateHelper = require('./lib/templateHelper')(configuration, options, projectDir, diffToolDir, data)
 const sitemap = require('./lib/sitemap')(configuration, options, projectDir)
+const crawler = require('./lib/crawler')(configuration, options, projectDir)
 
 const pdf = require('./lib/pdf')(templatesDir, data, templateHelper)
 const screenshot = require('./lib/screenshot')(configuration, options, templateHelper)
@@ -83,18 +84,25 @@ function run () {
   templateHelper.createDirectoryStructur(tempDir)
   templateHelper.distributeHtmlFiles(tempDir, templatesDir)
 
-  for (let browserName of browsers) {
-    switch (options.mode) {
-      case 'screenshots':
-        screenshot.create(browser, browserName, domains, tempDir, q)
-        break
-      case 'pdf':
-        pdf.create(configuration, browserName, domains, tempDir, options)
-        break
-      case 'sitemap':
-        sitemap.fetch(options.url, options.depth, options.testName)
-        break
-    }
+  switch (options.mode) {
+    case 'sitemap':
+      sitemap.fetch(options.url, options.depth, options.testName)
+      break
+    case 'crawl':
+      crawler.fetch(options.url, options.depth, options.testName, options.conc)
+      break
+    default:
+      for (let browserName of browsers) {
+        switch (options.mode) {
+          case 'screenshots':
+            screenshot.create(browser, browserName, domains, tempDir, q)
+            break
+          case 'pdf':
+            pdf.create(configuration, browserName, domains, tempDir, options)
+            break
+
+        }
+      }
   }
 }
 
