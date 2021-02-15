@@ -63,9 +63,9 @@ function run () {
     }
   } else {
     domains.push(options.domain)
-    if (configuration['targets'][options.domain]['config']) {
-      options.browser = configuration['targets'][options.domain]['config']['browser']
-      options.waitFor = configuration['targets'][options.domain]['config']['waitFor']
+    if (configuration['sequences'][options.domain]['config']) {
+      options.browser = configuration['sequences'][options.domain]['config']['browser']
+      options.waitFor = configuration['sequences'][options.domain]['config']['waitFor']
     }
   }
 
