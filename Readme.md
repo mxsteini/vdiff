@@ -14,7 +14,9 @@ npm i -P git+ssh://git@gitlab.cyperfection.de:mst/frontendtest.git
 - --single testname: run a single named test
 - --class classname: run tests with a named class
 - --skipTarget number: skip screenshooting target possible values 1 and 2 use this to prevent exclusions by admins
-
+- --mode
+  -- screenshots [default]
+  -- crawl run a crawler
 
 ## example without params 
 look at tasks/ui-test.js for defaults

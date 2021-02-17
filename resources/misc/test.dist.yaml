@@ -12,7 +12,7 @@ test1:
       path: "/"
       steps:
         -
-          action: "",
+          action: ""
           waitFor: 800
         -
           action: "click"
@@ -26,7 +26,7 @@ test1:
       steps:
         -
           # hover, click, focus, key, press,
-          action: "focus",
+          action: "focus"
           action_selector: "#quicksearch-sword"
           waitFor: 100
         -

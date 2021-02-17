@@ -89,7 +89,7 @@ function run () {
       sitemap.fetch(options.url, options.depth, options.testName)
       break
     case 'crawl':
-      crawler.fetch(options.url, options.depth, options.testName, options.conc)
+      crawler.fetch(options.url, options.depth, options.sequenceName, options.conc)
       break
     default:
       for (let browserName of browsers) {
