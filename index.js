@@ -83,6 +83,13 @@ function run () {
 
   templateHelper.createDirectoryStructur(tempDir)
   templateHelper.distributeHtmlFiles(tempDir, templatesDir)
+  for (let key in configuration['sequences']) {
+    if (!configuration['sequences'][key]['initialActions']) {
+      if (!!configuration.default.initialActions) {
+        configuration['sequences'][key]['initialActions'] = configuration.default.initialActions
+      }
+    }
+  }
 
   switch (options.mode) {
     case 'sitemap':
