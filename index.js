@@ -31,7 +31,7 @@ const screenshot = require('./lib/screenshot')(configuration, options, templateH
 Error.stackTraceLimit = options.debug
 
 let browser = [] // array for browserobjects
-let domains = []
+let sequences = []
 
 let q = queue()
 q.concurrency = options.conc
@@ -40,14 +40,14 @@ q.on('success', function () {
   better.info('remaining: ' + q.length)
 })
 q.on('end', async function () {
-  if (options.domain === '_all_') {
+  if (options.sequence === '_all_') {
     for (var key in configuration.targets) {
-      domains.push(key)
+      sequences.push(key)
     }
   } else {
-    domains.push(options.domain)
+    sequences.push(options.sequence)
   }
-  templateHelper.createDiffList(tempDir, templatesDir, browsers, data, domains)
+  templateHelper.createDiffList(tempDir, templatesDir, browsers, data, sequences)
 
   better.info('runtests - ', 'finished')
   for (let browserName of browsers) {
@@ -57,15 +57,15 @@ q.on('end', async function () {
 })
 
 function run () {
-  if (options.domain === '_all_') {
+  if (options.sequence === '_all_') {
     for (var key in configuration.targets) {
-      domains.push(key)
+      sequences.push(key)
     }
   } else {
-    domains.push(options.domain)
-    if (configuration['sequences'][options.domain]['config']) {
-      options.browser = configuration['sequences'][options.domain]['config']['browser']
-      options.waitFor = configuration['sequences'][options.domain]['config']['waitFor']
+    sequences.push(options.sequence)
+    if (configuration['sequences'][options.sequence]['config']) {
+      options.browser = configuration['sequences'][options.sequence]['config']['browser']
+      options.waitFor = configuration['sequences'][options.sequence]['config']['waitFor']
     }
   }
 
@@ -95,10 +95,10 @@ function run () {
       for (let browserName of browsers) {
         switch (options.mode) {
           case 'screenshots':
-            screenshot.create(browser, browserName, domains, tempDir, q)
+            screenshot.create(browser, browserName, sequences, tempDir, q)
             break
           case 'pdf':
-            pdf.create(configuration, browserName, domains, tempDir, options)
+            pdf.create(configuration, browserName, sequences, tempDir, options)
             break
 
         }
