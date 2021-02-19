@@ -1,17 +1,12 @@
-# install
-% VDIFF(1) Version 1.0 | vdiff is a package for visualize the difference of 2 webpages
-
-NAME
-====
+# NAME
 
 **vdiff**
 
-SYNOPSIS
-========
+# SYNOPSIS
 
 **vdiff** [**--mode** screenshosts] [**--target1** string] [**--target2** string] [**--browser** string] [**--sequence** string] [**--conc** number] [**--skipTarget** 1|2]
 
-**vdiff** [**--mode** pdf] [_dedication_]
+**vdiff** **--mode** pdf
 
 **vdiff** **--mode** crawl **--url** url [**--depth** depth] [**--sequenceName** name_of_sequence]
 
@@ -45,9 +40,20 @@ A list of path or object with path and step which are performed on the url of th
 
 
 # Installation
-
 ```bash
-npm i -P https://github.com/mxsteini/vdiff.git
+# init your project
+npm init
+
+# using https
+npm i -P git+https://github.com/mxsteini/vdiff.git
+
+# using ssh
+npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
+```
+
+# Usage
+```bash
+./node_modules/diff-tool/bin/vdiff.js [options]
 ```
 
 ## Configuration
