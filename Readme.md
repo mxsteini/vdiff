@@ -34,10 +34,16 @@ The name of the browser configuraion which is required. You can have as much bro
 * initialAction: \
 Contains a path and steps section. These steps are executed before a sequence is started
 
-* sequense: \
+* sequence: \
 A list of path or object with path and step which are performed on the url of the given target. \
   Sequences could be stored as json or yaml in the sequences folder
-
+  
+* step: \
+An array that contains an action, action data and waitFor
+  * action: hover, click, focus, type, press
+  * action_selector: is a html selector and need by hover, click, focus
+  * action_input: is a string or key and needed by type, press
+  * waitfor: the time to wait before taking the screenshot 
 
 # Installation
 ```bash
@@ -53,7 +59,7 @@ npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
 
 # Usage
 ```bash
-./node_modules/diff-tool/bin/vdiff.js [options]
+./node_modules/vdiff/bin/vdiff.js [options]
 ```
 
 ## Configuration
