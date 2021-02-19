@@ -1,6 +1,6 @@
 # NAME
 
-**vdiff**
+**vdiff** visual difference of two webpages with the capability to run acceptance tests
 
 # SYNOPSIS
 
@@ -14,7 +14,7 @@
 
 # DESCRIPTION
 
-vdiff is a tool to show the difference of to webpages. It gives you an simple interface which contains a thumbnail with an overview and a detailview. \
+vdiff is a tool to show the difference of to webpages in a visual way. It gives you an simple interface which contains a thumbnail with an overview and a detailview. \
 It uses puppeteer and the build in chromium browser to generate the screenshosts. \
 In the "normal" screenshot mode you don't need any configuration if they are configured correctly in configuration.json. This enables your non-geek-QA-collegue to run predefined test without having detailed CLI knowledge.\
 **Attention** this tool opens many browsers (see the --conc option) and sends many request to the given target. This may result in some DoS fend offs. To prevent this use the --skipTarget option.
