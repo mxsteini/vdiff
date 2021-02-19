@@ -90,27 +90,27 @@ This is the name of second target to inspect. This has to be defined in configur
 
 This option defines which target should be skipped in sequence. This is to prevent a Denial of Service attac action against you. 
 
-**--browser** string
+**--browser** [string | \_all_]
 
-Run a sequence an a single browser which is defined in the browser setion in configuration.json 
+Run a sequence an a single browser which is defined in the browser setion in configuration.json. \_all_ runs the sequence with all defined browsers.  
 
-**--sequence** string
+**--sequence** [string | \_all_]
 
-Run this sequence.
+Run this sequence. \_all_ runs all sequences
 
---url
+**--url**
 
 In --mode crawl this url is used as baseurl. In --mode sitemap the url must result in sitemap.xml file.
 
---sequenceName
+**--sequenceName**
 
 The file an sequence name where to write the result of --mode crawl or --mode sitemap. Default is sitemap.
 
---depth
+**--depth**
 
 The depth for --mode crawl and --mode sitemap. Default is 3.
 
---conc
+**--conc**
 
 This value is very critical. It describes the number of pages which are opened simultaneous. **Beware** if you run a sequence against a production system, it will result in a DoS defense. Use the --skipTarget save the production system.
 
@@ -142,13 +142,16 @@ if a dedication is not supplied on the command line.
 
 ## CREDITS
 
-puppeteer
-jimp
-cyperfection
+As like many other project this project depends on the work of other people.
+
+But one of them is special and has to be mentioned in this context. He is my friend and together with him this tool has its today shape.
+
+* Luca Kredel <https://github.com/Phosphenius>
+
 
 ## BUGS
 
-See GitHub Issues: <https://github.com/[owner]/[repo]/issues>
+See GitHub Issues: <https://github.com/mxsteini/vdiff/issues>
 
 ## AUTHOR
 
