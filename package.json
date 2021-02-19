@@ -1,13 +1,13 @@
 {
-  "name": "diff-tool",
-  "version": "0.1.0",
+  "name": "vdiff",
+  "version": "1.0.0",
   "author": {
     "name": "Michael Stein",
     "email": "info@michaelstein-itb.de"
   },
   "repository": {
     "type": "git",
-    "url": "gitlab.cyperfection.de:mst/frontendtest.git"
+    "url": "https://github.com/mxsteini/vdiff.git"
   },
   "dependencies": {
     "better-logging": "^4.4.0",
