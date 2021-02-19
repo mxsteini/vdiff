@@ -17,156 +17,128 @@ SYNOPSIS
 
 **vdiff** **--mode** sitemap **--url** url [**--depth** depth] [**--sequenceName** name_of_sequence]
 
-DESCRIPTION
-===========
-vdiff is a tool to show the difference of to webpages. It gives you an simple interface which contains a thumbnail with an overview and a detailview.
+# DESCRIPTION
 
-It uses puppeteer and the build in chromium browser to generate the screenshosts.
+vdiff is a tool to show the difference of to webpages. It gives you an simple interface which contains a thumbnail with an overview and a detailview. \
+It uses puppeteer and the build in chromium browser to generate the screenshosts. \
+In the "normal" screenshot mode you don't need any configuration if they are configured correctly in configuration.json. This enables your non-geek-QA-collegue to run predefined test without having detailed CLI knowledge.\
+**Attention** this tool opens many browsers (see the --conc option) and sends many request to the given target. This may result in some DoS fend offs. To prevent this use the --skipTarget option.
 
-In the "normal" screenshot mode you don't need any configuration if they are configured correctly in configuration.json. This enables your non-geek-QA-collegue to run predefined test without having detailed CLI knowledge.
+## How it works
 
-Installation
-------------
+If you start vdiff in screenshots mode, it will open one or two browsers per sequence. Each browser will perform the initialAction and then the sequence.
+
+# DICTIONARY
+
+* target: \
+Name for a baseurl to test. Usual names are: dev, build, live, stage.
+  
+* browser: \
+The name of the browser configuraion which is required. You can have as much browser configuration as you want. Have a look at resources/misc/configuration.dist.json in the section browser.
+
+* initialAction: \
+Contains a path and steps section. These steps are executed before a sequence is started
+
+* sequense: \
+A list of path or object with path and step which are performed on the url of the given target. \
+  Sequences could be stored as json or yaml in the sequences folder
+
+
+# Installation
 
 ```bash
-npm i -P git+ssh://git@gitlab.cyperfection.de:mst/frontendtest.git
+npm i -P https://github.com/mxsteini/vdiff.git
 ```
 
-Options
--------
+## Configuration
+As a good starting point get a copy of configuration.json from resources/misc/configuration.json.
+After configuring configuration.json for your needs, get a copy test.yaml and put it in sequences.
+
+## Options
 
 --mode [sreenshosts|pdf|crawl|sitemap]
 
-**screenshosts** is the default mode. No other option is need but can be given: --target1, --target2, --skipTarget, --browser, --sequence,
+**screenshosts**: is the default mode. No other option is need but can be given: --target1, --target2, --skipTarget, --browser, --sequence
 
-**pdf** No other option is need but can be given: --browser, --sequence,
+**pdf**: No other option is need but can be given: --browser, --sequence
 
-**crawl** crawl an url to create a sequence. Requires option is --url. Optional parameters are --sequenceName, --depth
+**crawl**: crawl an url to create a sequence. Requires option is --url. Optional parameters are --sequenceName, --depth
 
+**sitemap**: fetch the given url, extract the paths and write in down in the given (--sequenceName) file. Requires option is --url. Optional parameters are --sequenceName, --depth \
 
+**--target1** string
 
---target1
+This is the name of first target to inspect. This has to be defined in configuration.json in the section default.target or in each sequence in the section target 
 
---target2
+**--target2** string
 
---skipTarget
+This is the name of second target to inspect. This has to be defined in configuration.json in the section default.target or in each sequence in the section target
 
---browser
+**--skipTarget** [1|2]
 
---sequence
+This option defines which target should be skipped in sequence. This is to prevent a Denial of Service attac action against you. 
+
+**--browser** string
+
+Run a sequence an a single browser which is defined in the browser setion in configuration.json 
+
+**--sequence** string
+
+Run this sequence.
 
 --url
 
+In --mode crawl this url is used as baseurl. In --mode sitemap the url must result in sitemap.xml file.
+
 --sequenceName
+
+The file an sequence name where to write the result of --mode crawl or --mode sitemap. Default is sitemap.
 
 --depth
 
+The depth for --mode crawl and --mode sitemap. Default is 3.
+
 --conc
 
--h, --help
+This value is very critical. It describes the number of pages which are opened simultaneous. **Beware** if you run a sequence against a production system, it will result in a DoS defense. Use the --skipTarget save the production system.
 
-:   Prints brief usage information.
+## FILES
 
--o, --output
-
-:   Outputs the greeting to the given filename.
-
-    The file must be an **open(2)**able and **write(2)**able file.
-
--v, --version
-
-:   Prints the current version number.
-
-FILES
-=====
-
-*configuration.json*
+*configuration.json*\
+Contains the basic configuration. 
 
 *sequences/\*.json*
+Contains sequences
 
 *sequences/\*.yaml*
+Contains sequences
 
+## DIRECTORIES
 
-ENVIRONMENT
-===========
+* sequences \
+put the configuration of all your sequnces in here
+  
+* tmp \
+here you will find the result of your sequences
+
+## ENVIRONMENT
 
 **DEFAULT_HELLO_DEDICATION**
 
 :   The default dedication if none is given. Has the highest precedence
 if a dedication is not supplied on the command line.
 
-CREDITS
-=======
+## CREDITS
 
 puppeteer
 jimp
 cyperfection
 
-BUGS
-====
+## BUGS
 
 See GitHub Issues: <https://github.com/[owner]/[repo]/issues>
 
-AUTHOR
-======
+## AUTHOR
 
 Michael Stein <info@michaelstein-itb.de>
 
-SEE ALSO
-========
-
-**hi(1)**, **hello(3)**, **hello.conf(5)**
-
-
-
-
-
-```bash
-npm i -P git+ssh://git@gitlab.cyperfection.de:mst/frontendtest.git
-```
-
-
-## usage
-./node_modules/diff-tool/bin/difftool.js [parameter]
-
-- --target1 targetname: name of target1 
-- --target2 targetname: name of target2 
-- --skipTarget number: skip screenshooting target possible values 1 and 2 use this to prevent exclusions by admins
-- --conc int: number of parallel browser should be started (default: 5)
-- --sequence sequencename: name of sequence to run
-- --mode [screenshots|crawl|sitemap|crawl]
-
-  - screenshots [default]
-  
-  - pdf: create a pdf 
-  
-  - crawl run a crawler
-    
-    requires --url url
-    
-    optional --depth number
-
-  - sitemap getch sitemap from url
-    
-    requires --url url
-    
-    optional --depth number
-
-## example without params 
-look at tasks/ui-test.js for defaults
-```bash 
-gulp ui-tests 
-```
-
-## example with params
-```bash 
-./runtest.js --domain luin --target1 dev --target2 build
-```
-
-## check results
-open tmp/[domain]/frameset.html in chrome
-
-## normal run
-```bash
-gulp ui-tests --skipTarget 1
-```

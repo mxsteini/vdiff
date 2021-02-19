@@ -27,7 +27,8 @@
 		"target1": "live",
 		"target2": "dev",
 		"sequence": "project",
-		"debug": 0
+		"debug": 0,
+		"waitFor": 200
 	},
 	"browser": {
 		"fullpage": {

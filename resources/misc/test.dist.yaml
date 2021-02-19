@@ -1,12 +1,12 @@
 #
 test1:
-# target is optional and inserted from configuration.default.target
+  # optional: target is optional and inserted from configuration.default.target
   target:
     _reference: "https://bain.localhost"
     new: "https://new.project.com"
     dev: "https://dev.project.com"
     local: "https://bain.localhost"
-  # target is optional and inserted from configuration.default.target if available
+  # optional:  target is optional and inserted from configuration.default.target if available
   initialActions:
     -
       path: "/"
@@ -18,6 +18,7 @@ test1:
           action: "click"
           action_selector: ".cookies-text button.close"
           waitFor: 300
+  # required: a sequence must contain a list
   list:
     # single path
     - "/impressum"
