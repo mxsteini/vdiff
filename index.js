@@ -41,7 +41,7 @@ q.on('success', function () {
 })
 q.on('end', async function () {
   if (options.sequence === '_all_') {
-    for (var key in configuration.targets) {
+    for (var key in configuration.sequences) {
       sequences.push(key)
     }
   } else {
@@ -58,7 +58,7 @@ q.on('end', async function () {
 
 function run () {
   if (options.sequence === '_all_') {
-    for (var key in configuration.targets) {
+    for (var key in configuration.sequences) {
       sequences.push(key)
     }
   } else {
@@ -83,13 +83,6 @@ function run () {
 
   templateHelper.createDirectoryStructur(tempDir)
   templateHelper.distributeHtmlFiles(tempDir, templatesDir)
-  for (let key in configuration['sequences']) {
-    if (!configuration['sequences'][key]['initialActions']) {
-      if (!!configuration.default.initialActions) {
-        configuration['sequences'][key]['initialActions'] = configuration.default.initialActions
-      }
-    }
-  }
 
   switch (options.mode) {
     case 'sitemap':
