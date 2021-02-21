@@ -132,19 +132,13 @@ put the configuration of all your sequnces in here
   
 * tmp \
 here you will find the result of your sequences
-
-## ENVIRONMENT
-
-**DEFAULT_HELLO_DEDICATION**
-
-:   The default dedication if none is given. Has the highest precedence
-if a dedication is not supplied on the command line.
+  
 
 ## CREDITS
 
 As like many other project this project depends on the work of other people.
 
-But one of them is special and has to be mentioned in this context. He is my friend and together with him this tool has its today shape.
+But one of them is special and has to be mentioned in this context. He is my friend and together with him, this tool has its today shape.
 
 * Luca Kredel <https://github.com/Phosphenius>
 
