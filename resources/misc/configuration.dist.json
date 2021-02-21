@@ -5,10 +5,20 @@
 			"ipad"
 		],
 		"target": {
-			"live": "https://www.project.com",
-			"new": "https://new.project.com",
-			"dev": "https://dev.project.com",
-			"local": "https://project.localhost"
+			"live": {
+				"url": "https://www.project.com"
+			},
+			"new": {
+				"url" : "https://new.project.com",
+				"user": "username",
+				"password": "YourUnsecretHtaccessPassword"
+			},
+			"dev": {
+				"url": "https://dev.project.com"
+			},
+			"local": {
+				"url": "https://project.localhost"
+			},
 		},
 		"initialActions": {
 			"path": "/",

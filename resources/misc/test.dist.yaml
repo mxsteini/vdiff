@@ -2,10 +2,16 @@
 test1:
   # optional: target is optional and inserted from configuration.default.target
   target:
-    _reference: "https://bain.localhost"
-    new: "https://new.project.com"
-    dev: "https://dev.project.com"
-    local: "https://bain.localhost"
+    _reference:
+      url: "https://bain.localhost"
+    new:
+      url: "https://new.project.com"
+      user: "htaccessUser"
+      password: "YourUnsecretHtaccessPassword"
+    dev:
+      url: "https://dev.project.com"
+    local:
+      url: "https://bain.localhost"
   # optional:  target is optional and inserted from configuration.default.target if available
   initialActions:
     -
