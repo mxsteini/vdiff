@@ -1,4 +1,8 @@
 {
+	"setup": {
+		"baseUrl": "",
+		"documentRoot": "vdiff"
+	},
 	"default": {
 		"browser": [
 			"fullpage",
@@ -16,6 +20,7 @@
 		"target2": "nytimes",
 		"sequence": "demo",
 		"debug": 0,
+		"output": "local",
 		"waitFor": 100
 	},
 	"browser": {

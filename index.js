@@ -7,18 +7,19 @@ const projectDir = process.cwd()
 const diffToolDir = path.dirname(__filename)
 const resourcesDir = path.join(diffToolDir, 'resources')
 const templatesDir = path.join(resourcesDir, 'templates')
-const tempDir = path.join(projectDir, 'tmp')
+
+
+const configurationHelper = require('./lib/configurationHelper')(projectDir, diffToolDir)
+const configuration = configurationHelper.configuration()
+const options = configurationHelper.options(configuration)
 
 let data = {
+  'baseUrl': configuration.setup.baseUrl ? configuration.setup.baseUrl : '',
   'projectPath': projectDir,
   'resourcesPath': resourcesDir,
   'allCss': path.join(resourcesDir, 'css/all.css'),
   'specCss': ''
 }
-
-const configurationHelper = require('./lib/configurationHelper')(projectDir, diffToolDir)
-const configuration = configurationHelper.configuration()
-const options = configurationHelper.options(configuration)
 
 const templateHelper = require('./lib/templateHelper')(configuration, options, projectDir, diffToolDir, data)
 const sitemap = require('./lib/sitemap')(configuration, options, projectDir)
@@ -48,6 +49,7 @@ q.on('end', async function () {
   } else {
     sequences.push(options.sequence)
   }
+  let tempDir = path.resolve(configuration.setup.documentRoot, 'Html')
   templateHelper.createDiffList(tempDir, templatesDir, browsers, data, sequences)
 
   better.info('runtests - ', 'finished')
@@ -82,8 +84,10 @@ function run () {
     }
   }
 
-  templateHelper.createDirectoryStructur(tempDir)
-  templateHelper.distributeHtmlFiles(tempDir, templatesDir)
+  templateHelper.createDirectoryStructur(diffToolDir)
+  templateHelper.distributeHtmlFiles(templatesDir)
+
+  let outputDir = path.resolve(configuration.setup.documentRoot, 'Html')
 
   switch (options.mode) {
     case 'sitemap':
@@ -96,10 +100,10 @@ function run () {
       for (let browserName of browsers) {
         switch (options.mode) {
           case 'screenshots':
-            screenshot.create(browser, browserName, sequences, tempDir, q)
+            screenshot.create(browser, browserName, sequences, outputDir, q)
             break
           case 'pdf':
-            pdf.create(configuration, browserName, sequences, tempDir, options)
+            pdf.create(configuration, browserName, sequences, outputDir, options)
             break
 
         }

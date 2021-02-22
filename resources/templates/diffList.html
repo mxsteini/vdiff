@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <base href="{{{data.baseUrl}}}">
     <title>Title</title>
     <link href="{{data.resourcesPath}}/css/all.css" media="all" rel="stylesheet" type="text/css">
     {{#data.specCss}}
@@ -17,7 +18,7 @@
     {{#diffList.initials}}
     <div>
         {{stepName}}<br>
-        <a href="{{diffHtml}}" target="diff"><img src="{{diffImage}}" width="200"/></a>
+        <a href="{{{diffHtml}}}" target="diff"><img src="{{{diffImage}}}" width="200"/></a>
     </div>
     {{/diffList.initials}}
 </div>
@@ -26,7 +27,7 @@
     {{#diffList.steps}}
     <div>
         {{stepName}}<br>
-        <a href="{{diffHtml}}" target="diff"><img src="{{diffImage}}" width="200"/></a>
+        <a href="{{{diffHtml}}}" target="diff"><img src="{{{diffImage}}}" width="200"/></a>
     </div>
     {{/diffList.steps}}
 </div>
