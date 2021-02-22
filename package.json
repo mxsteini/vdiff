@@ -1,6 +1,6 @@
 {
   "name": "vdiff",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Michael Stein",
     "email": "info@michaelstein-itb.de"
@@ -10,7 +10,7 @@
     "url": "https://github.com/mxsteini/vdiff.git"
   },
   "dependencies": {
-    "better-logging": "^4.4.0",
+    "better-logging": "^4.4.1",
     "concat": "^1.0.3",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",
