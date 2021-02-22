@@ -56,14 +56,24 @@ npm i -P git+https://github.com/mxsteini/vdiff.git
 # using ssh
 npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
 ```
-# Fast start 
+# Quick start 
 
+For review have a look to this demo <http://www.michaelstein-itb.de/vdiff/Html/index.html>
+(sorry for the missing certificate)
+
+If you want to install this tool local, use the following
+## render html
 ```bash
 npm init -y
 npm i -P git+https://github.com/mxsteini/vdiff.git
 cp ./node_modules/vdiff/resources/misc/configuration.demo.json configuration.json
 ./node_modules/vdiff/bin/vdiff.js
-google-chrome tmp/index.html
+google-chrome vdiff/Html/index.html
+```
+
+## render pdf
+```bash
+./node_modules/vdiff/bin/vdiff.js --mode pdf
 ```
 
 # Usage
