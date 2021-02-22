@@ -14,7 +14,7 @@ const configuration = configurationHelper.configuration()
 const options = configurationHelper.options(configuration)
 
 let data = {
-  'baseUrl': configuration.setup.baseUrl ? configuration.setup.baseUrl : '',
+  'baseUrl': configuration.setup.baseUrl ? configuration.setup.baseUrl : (path.resolve(configuration.setup.documentRoot) + '/'),
   'projectPath': projectDir,
   'resourcesPath': resourcesDir,
   'allCss': path.join(resourcesDir, 'css/all.css'),
@@ -56,7 +56,7 @@ q.on('end', async function () {
   for (let browserName of browsers) {
     browser[browserName].browser.close()
   }
-  better.line('open file://' + path.join(tempDir, 'index.html'))
+  better.line('google-chrome ' + data.baseUrl + path.join( 'Html', 'index.html'))
 })
 
 function run () {
