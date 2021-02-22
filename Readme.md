@@ -56,6 +56,15 @@ npm i -P git+https://github.com/mxsteini/vdiff.git
 # using ssh
 npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
 ```
+# Fast start 
+
+```bash
+npm init -y
+npm i -P git+https://github.com/mxsteini/vdiff.git
+cp ./node_modules/vdiff/resources/mist/configuration.demo.json configuration.json
+./node_modules/vdiff/bin/vdiff.js
+google-chrome tmp/index.html
+```
 
 # Usage
 ```bash

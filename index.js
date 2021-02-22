@@ -31,6 +31,7 @@ const screenshot = require('./lib/screenshot')(configuration, options, templateH
 Error.stackTraceLimit = options.debug
 
 let browser = [] // array for browserobjects
+let browsers = [] // array contains list of browsernames to process
 let sequences = []
 
 let q = queue()
