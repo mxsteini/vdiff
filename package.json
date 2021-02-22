@@ -1,6 +1,6 @@
 {
   "name": "vdiff",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Michael Stein",
     "email": "info@michaelstein-itb.de"
@@ -14,7 +14,6 @@
     "concat": "^1.0.3",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",
-    "image-to-pdf": "^1.0.0",
     "jimp": "^0.16.1",
     "load-json-file": "^6.2.0",
     "mustache": "^4.0.1",
@@ -24,7 +23,6 @@
     "simplecrawler": "^1.1.9",
     "sitemap-xml-parser": "0.0.2",
     "stream-replace": "^1.0.0",
-    "yaml": "^1.10.0",
-    "yargs": "^16.2.0"
+    "yaml": "^1.10.0"
   }
 }
