@@ -61,7 +61,7 @@ npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
 ```bash
 npm init -y
 npm i -P git+https://github.com/mxsteini/vdiff.git
-cp ./node_modules/vdiff/resources/mist/configuration.demo.json configuration.json
+cp ./node_modules/vdiff/resources/misc/configuration.demo.json configuration.json
 ./node_modules/vdiff/bin/vdiff.js
 google-chrome tmp/index.html
 ```
