@@ -1,4 +1,8 @@
 {
+	"setup": {
+		"baseUrl": "",
+		"documentRoot": "vdiff"
+	},
 	"default": {
 		"browser": [
 			"fullpage",
