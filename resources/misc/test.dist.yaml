@@ -2,8 +2,8 @@
 test1:
   # optional: target is optional and inserted from configuration.default.target
   target:
-    _reference:
-      url: "https://bain.localhost"
+    live:
+      url: "https://live.project.com"
     new:
       url: "https://new.project.com"
       user: "htaccessUser"
@@ -36,6 +36,11 @@ test1:
           action: "focus"
           action_selector: "#quicksearch-sword"
           waitFor: 100
+          screenshot:
+            x: 100
+            y: 100
+            width: 200
+            height: 200
         -
           action: "type"
           action_input: "sparen"
@@ -44,6 +49,8 @@ test1:
           action: "click"
           action_selector: "#quicksearch > form > button[type=submit]"
           waitFor: 2000
+          screenshot:
+            selector: "dom-element"
 # short version
 test2:
   list:
