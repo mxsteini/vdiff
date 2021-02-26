@@ -10,7 +10,7 @@
     
     * add images in div with flex, rotate them by CSS
 
-* [ ] extend screenshot capability like this
+* [x] extend screenshot capability like this
   ```yaml
   steps:
     -

@@ -13,7 +13,7 @@
 				"url": "https://www.project.com"
 			},
 			"new": {
-				"url" : "https://new.project.com",
+				"url": "https://new.project.com",
 				"user": "username",
 				"password": "YourUnsecretHtaccessPassword"
 			},
@@ -22,22 +22,24 @@
 			},
 			"local": {
 				"url": "https://project.localhost"
-			},
+			}
 		},
-		"initialActions": {
-			"path": "/",
-			"steps": [
-				{
-					"action": "",
-					"waitFor": 500
-				},
-				{
-					"action": "click",
-					"action_selector": "button",
-					"waitFor": 100
-				}
-			]
-		},
+		"initialActions": [
+			{
+				"path": "/",
+				"steps": [
+					{
+						"action": "",
+						"waitFor": 500
+					},
+					{
+						"action": "click",
+						"action_selector": "button",
+						"waitFor": 100
+					}
+				]
+			}
+		],
 		"target1": "live",
 		"target2": "dev",
 		"sequence": "project",

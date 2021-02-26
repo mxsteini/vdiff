@@ -15,6 +15,7 @@ test1:
   # optional:  target is optional and inserted from configuration.default.target if available
   initialActions:
     -
+      # url: here you could navigate to an special url. This would be useful for SSO
       path: "/"
       steps:
         -
