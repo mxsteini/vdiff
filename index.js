@@ -72,6 +72,15 @@ function run () {
     }
   }
 
+  for (let sequence of sequences) {
+    for (let defaultValue of Object.keys(configuration.default)) {
+      if (!configuration.sequences[sequence][defaultValue]) {
+        configuration.sequences[sequence][defaultValue] = configuration.default[defaultValue]
+      }
+    }
+  }
+console.log('index: 82', configuration.sequences.demo)
+  process.exit()
   if (options.browser === '_all_') {
     for (var key in configuration.browser) {
       browsers.push(key)
