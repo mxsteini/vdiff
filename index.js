@@ -33,7 +33,7 @@ Error.stackTraceLimit = options.debug
 
 let browser = [] // array for browserobjects
 let browsers = [] // array contains list of browsernames to process
-let sequences = []
+let sequencesNames = []
 
 let q = queue()
 q.concurrency = options.conc
@@ -44,13 +44,13 @@ q.on('success', function () {
 q.on('end', async function () {
   if (options.sequence === '_all_') {
     for (var key in configuration.sequences) {
-      sequences.push(key)
+      sequencesNames.push(key)
     }
   } else {
-    sequences.push(options.sequence)
+    sequencesNames.push(options.sequence)
   }
   let tempDir = path.resolve(configuration.setup.documentRoot, 'Html')
-  templateHelper.createDiffList(tempDir, templatesDir, browsers, data, sequences)
+  templateHelper.createDiffList(tempDir, templatesDir, browsers, data, sequencesNames)
 
   better.info('runtests - ', 'finished')
   for (let browserName of browsers) {
@@ -62,25 +62,20 @@ q.on('end', async function () {
 function run () {
   if (options.sequence === '_all_') {
     for (var key in configuration.sequences) {
-      sequences.push(key)
+      sequencesNames.push(key)
     }
   } else {
-    sequences.push(options.sequence)
-    if (configuration['sequences'][options.sequence]['config']) {
-      options.browser = configuration['sequences'][options.sequence]['config']['browser']
-      options.waitFor = configuration['sequences'][options.sequence]['config']['waitFor']
-    }
+    sequencesNames.push(options.sequence)
   }
 
-  for (let sequence of sequences) {
+  for (let sequenceName of sequencesNames) {
     for (let defaultValue of Object.keys(configuration.default)) {
-      if (!configuration.sequences[sequence][defaultValue]) {
-        configuration.sequences[sequence][defaultValue] = configuration.default[defaultValue]
+      if (!configuration.sequences[sequenceName][defaultValue]) {
+        configuration.sequences[sequenceName][defaultValue] = configuration.default[defaultValue]
       }
     }
   }
-console.log('index: 82', configuration.sequences.demo)
-  process.exit()
+
   if (options.browser === '_all_') {
     for (var key in configuration.browser) {
       browsers.push(key)
@@ -109,10 +104,10 @@ console.log('index: 82', configuration.sequences.demo)
       for (let browserName of browsers) {
         switch (options.mode) {
           case 'screenshots':
-            screenshot.create(browser, browserName, sequences, outputDir, q)
+            screenshot.create(browser, browserName, sequencesNames, outputDir, q)
             break
           case 'pdf':
-            pdf.create(configuration, browserName, sequences, outputDir, options)
+            pdf.create(configuration, browserName, sequencesNames, outputDir, options)
             break
 
         }
