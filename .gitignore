@@ -3,3 +3,4 @@
 configuration.json
 .idea
 /sequences
+.env

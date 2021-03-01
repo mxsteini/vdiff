@@ -1,7 +1,7 @@
 const queue = require('queue')
 const path = require('path')
 const better = require('./lib/logger')
-
+require('dotenv').config()
 
 const projectDir = process.cwd()
 const diffToolDir = path.dirname(__filename)

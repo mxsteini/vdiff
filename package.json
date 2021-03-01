@@ -1,6 +1,6 @@
 {
   "name": "vdiff",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "author": {
     "name": "Michael Stein",
     "email": "info@michaelstein-itb.de"
@@ -12,6 +12,7 @@
   "dependencies": {
     "better-logging": "^4.4.1",
     "concat": "^1.0.3",
+    "dotenv": "^8.2.0",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",
     "jimp": "^0.16.1",

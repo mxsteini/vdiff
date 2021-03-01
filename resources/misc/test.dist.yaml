@@ -46,6 +46,11 @@ test1:
           action: "type"
           action_input: "sparen"
           waitFor: 100
+        # for more privacy store your data in .env
+        -
+          action: "type"
+          action_input_env: "DOT_ENV_VARIABLE"
+          waitFor: 100
         -
           action: "click"
           action_selector: "#quicksearch > form > button[type=submit]"
