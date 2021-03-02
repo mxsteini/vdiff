@@ -29,10 +29,10 @@ const pdf = require('./lib/pdf')(templatesDir, data, templateHelper)
 const screenshot = require('./lib/screenshot')(configuration, options, templateHelper)
 
 
-Error.stackTraceLimit = options.debug
+// Error.stackTraceLimit = options.debug
 
 let browser = [] // array for browserobjects
-let browsers = [] // array contains list of browsernames to process
+let browserNames = [] // array contains list of browsernames to process
 let sequencesNames = []
 
 let q = queue()
@@ -50,11 +50,13 @@ q.on('end', async function () {
     sequencesNames.push(options.sequence)
   }
   let tempDir = path.resolve(configuration.setup.documentRoot, 'Html')
-  templateHelper.createDiffList(tempDir, templatesDir, browsers, data, sequencesNames)
+  templateHelper.createDiffList(tempDir, templatesDir, browserNames, data, sequencesNames)
 
   better.info('runtests - ', 'finished')
-  for (let browserName of browsers) {
-    browser[browserName].browser.close()
+  for (let sequenceName of sequencesNames) {
+    for (let browserName of configuration.sequences[sequenceName].browser) {
+      browser[sequenceName][browserName].browser.close()
+    }
   }
   better.line('google-chrome ' + data.baseUrl + path.join( 'Html', 'index.html'))
 })
@@ -78,13 +80,13 @@ function run () {
 
   if (options.browser === '_all_') {
     for (var key in configuration.browser) {
-      browsers.push(key)
+      browserNames.push(key)
     }
   } else {
     if (typeof options.browser == 'string') {
-      browsers.push(options.browser)
+      browserNames.push(options.browser)
     } else {
-      browsers = options.browser
+      browserNames = options.browser
     }
   }
 
@@ -101,13 +103,13 @@ function run () {
       crawler.fetch(options.url, options.depth, options.sequenceName, options.conc)
       break
     default:
-      for (let browserName of browsers) {
+      for (let sequencesName of sequencesNames) {
         switch (options.mode) {
           case 'screenshots':
-            screenshot.create(browser, browserName, sequencesNames, outputDir, q)
+            screenshot.create(browser, browserNames, sequencesName, outputDir, q)
             break
           case 'pdf':
-            pdf.create(configuration, browserName, sequencesNames, outputDir, options)
+            pdf.create(configuration, browserNames, sequencesName, outputDir, options)
             break
 
         }
