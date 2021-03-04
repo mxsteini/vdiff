@@ -97,7 +97,7 @@ function run () {
 
   switch (options.mode) {
     case 'sitemap':
-      sitemap.fetch(options.url, options.depth, options.testName)
+      sitemap.fetch(options.url, options.depth, options.sequenceName)
       break
     case 'crawl':
       crawler.fetch(options.url, options.depth, options.sequenceName, options.conc)
