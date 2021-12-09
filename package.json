@@ -2,7 +2,7 @@
   "name": "vdiff",
   "version": "1.7.0",
   "bin": {
-    "vdiff": "bin/vdiff"
+    "vdiff": "bin/vdiff.js"
   },
   "author": {
     "name": "Michael Stein",
