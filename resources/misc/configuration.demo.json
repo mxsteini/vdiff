@@ -1,54 +1,57 @@
 {
-	"setup": {
-		"baseUrl": "",
-		"documentRoot": "vdiff"
-	},
-	"default": {
-		"browser": [
-			"fullpage",
-			"ipad"
-		],
-		"target": {
-			"google": {
-				"url": "https://www.google.com"
-			},
-			"nytimes": {
-				"url": "https://www.nytimes.com"
-			}
-		},
-		"initialActions": {
-			"path": "/",
-			"steps": [
-				{
-					"action": "",
-					"waitFor": 500
-				}
-			]
-		},
-		"target1": "google",
-		"target2": "nytimes",
-		"sequence": "demo",
-		"debug": 0,
-		"waitFor": 100
-	},
-	"browser": {
-		"fullpage": {
-			"width": 1200,
-			"height": 0,
-			"isMobile": 0
-		},
-		"ipad": {
-			"width": 768,
-			"height": 1024,
-			"isMobile": 1
-		}
-	},
-	"sequences": {
-		"demo": {
-			"list": [
-				"/",
-				"/contact"
-			]
-		}
-	}
+  "setup": {
+    "baseUrl": "",
+    "documentRoot": "vdiff",
+    "example_executablePath": "/usr/bin/google-chrome"
+  },
+  "default": {
+    "browser": [
+      "fullpage",
+      "ipad"
+    ],
+    "target": {
+      "google": {
+        "url": "https://www.google.com"
+      },
+      "nytimes": {
+        "url": "https://www.nytimes.com"
+      }
+    },
+    "initialActions": [
+      {
+        "path": "/",
+        "steps": [
+          {
+            "action": "",
+            "waitFor": 500
+          }
+        ]
+      }
+    ],
+    "target1": "google",
+    "target2": "nytimes",
+    "sequence": "demo",
+    "debug": 0,
+    "waitFor": 100
+  },
+  "browser": {
+    "fullpage": {
+      "width": 1200,
+      "height": 0,
+      "isMobile": 0
+    },
+    "ipad": {
+      "width": 768,
+      "height": 1024,
+      "isMobile": 1
+    }
+  },
+  "sequences": {
+    "demo": {
+      "list": [
+        "/",
+        "/contact"
+      ]
+    }
+  }
 }

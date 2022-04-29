@@ -1,6 +1,7 @@
-/node_modules
-/vdiff
+node_modules
+vdiff
 configuration.json
 .idea
-/sequences
+sequences
 .env
+package-lock.json
