@@ -4,7 +4,7 @@
 
 # SYNOPSIS
 
-**vdiff** [**--mode** screenshosts] [**--target1** string] [**--target2** string] [**--browser** string] [**--sequence** string] [**--conc** number] [**--skipTarget** 1|2]
+**vdiff** [**--mode** screenshosts] [**--target1** string] [**--target2** string] [**--browser** string] [**--sequence** string|csv] [**--conc** number] [**--skipTarget** 1|2]
 
 **vdiff** **--mode** pdf
 
@@ -27,7 +27,7 @@ If you start vdiff in screenshots mode, it will open one or two browsers per seq
 
 * target: \
 Name for a baseurl to test. Usual names are: dev, build, live, stage.
-  
+
 * browser: \
 The name of the browser configuraion which is required. You can have as much browser configuration as you want. Have a look at resources/misc/configuration.dist.json in the section browser.
 
@@ -37,13 +37,13 @@ Contains a path and steps section. These steps are executed before a sequence is
 * sequence: \
 A list of path or object with path and step which are performed on the url of the given target. \
   Sequences could be stored as json or yaml in the sequences folder
-  
+
 * step: \
 An array that contains an action, action data and waitFor
   * action: hover, click, focus, type, press
   * action_selector: is a html selector and need by hover, click, focus
   * action_input: is a string or key and needed by type, press
-  * waitfor: the time to wait before taking the screenshot 
+  * waitfor: the time to wait before taking the screenshot
 
 # Installation
 ```bash
@@ -56,7 +56,7 @@ npm i -P git+https://github.com/mxsteini/vdiff.git
 # using ssh
 npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
 ```
-# Quick start 
+# Quick start
 
 For review have a look to this demo <http://www.michaelstein-itb.de/vdiff/Html/index.html>
 (sorry for the missing certificate)
@@ -99,7 +99,7 @@ After configuring configuration.json for your needs, get a copy test.yaml and pu
 
 **--target1** string
 
-This is the name of first target to inspect. This has to be defined in configuration.json in the section default.target or in each sequence in the section target 
+This is the name of first target to inspect. This has to be defined in configuration.json in the section default.target or in each sequence in the section target
 
 **--target2** string
 
@@ -107,15 +107,16 @@ This is the name of second target to inspect. This has to be defined in configur
 
 **--skipTarget** [1|2]
 
-This option defines which target should be skipped in sequence. This is to prevent a Denial of Service attac action against you. 
+This option defines which target should be skipped in sequence. This is to prevent a Denial of Service attac action against you.
 
 **--browser** [string | \_all_]
 
-Run a sequence an a single browser which is defined in the browser setion in configuration.json. \_all_ runs the sequence with all defined browsers.  
+Run a sequence an a single browser which is defined in the browser setion in configuration.json. \_all_ runs the sequence with all defined browsers.
 
-**--sequence** [string | \_all_]
+**--sequence** [string(csv) | \_all_]
 
 Run this sequence. \_all_ runs all sequences
+You could give a list of sequence separeted by , without! spaces
 
 **--url**
 
@@ -136,7 +137,7 @@ This value is very critical. It describes the number of pages which are opened s
 ## FILES
 
 *configuration.json*\
-Contains the basic configuration. 
+Contains the basic configuration.
 
 *sequences/\*.json*
 Contains sequences
@@ -148,10 +149,10 @@ Contains sequences
 
 * sequences \
 put the configuration of all your sequnces in here
-  
+
 * tmp \
 here you will find the result of your sequences
-  
+
 
 ## CREDITS
 

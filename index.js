@@ -47,7 +47,9 @@ q.on('end', async function () {
       sequencesNames.push(key)
     }
   } else {
-    sequencesNames.push(options.sequence)
+    options.sequence.split(',').forEach((sequence)=>
+      sequencesNames.push(sequence)
+    )
   }
   let tempDir = path.resolve(configuration.setup.documentRoot, 'Html')
   templateHelper.createDiffList(tempDir, templatesDir, browserNames, data, sequencesNames)
@@ -67,7 +69,9 @@ function run () {
       sequencesNames.push(key)
     }
   } else {
-    sequencesNames.push(options.sequence)
+    options.sequence.split(',').forEach((sequence)=>
+      sequencesNames.push(sequence)
+    )
   }
 
   for (let sequenceName of sequencesNames) {

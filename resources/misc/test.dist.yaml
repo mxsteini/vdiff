@@ -11,7 +11,7 @@ test1:
     dev:
       url: "https://dev.project.com"
     local:
-      url: "https://bain.localhost"
+      url: "https://project.localhost"
   # optional:  target is optional and inserted from configuration.default.target if available
   initialActions:
     -
