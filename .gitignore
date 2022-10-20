@@ -1,7 +1,9 @@
 node_modules
+.node-version
 vdiff
 configuration.json
 .idea
 sequences
 .env
 package-lock.json
+
