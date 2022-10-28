@@ -1,5 +1,6 @@
 const queue = require('queue')
 const path = require('path')
+const os = require('os')
 const better = require('./lib/logger')
 require('dotenv').config()
 
@@ -13,7 +14,7 @@ const configurationHelper = require('./lib/configurationHelper')(projectDir, dif
 const configuration = configurationHelper.configuration()
 const options = configurationHelper.options(configuration)
 
-require('events').EventEmitter.defaultMaxListeners = configuration.setup.maxListeners;
+require('events').EventEmitter.defaultMaxListeners = configuration.setup.maxListeners
 
 
 let data = {
@@ -50,7 +51,7 @@ q.on('end', async function () {
       sequencesNames.push(key)
     }
   } else {
-    options.sequence.split(',').forEach((sequence)=>
+    options.sequence.split(',').forEach((sequence) =>
       sequencesNames.push(sequence)
     )
   }
@@ -63,16 +64,25 @@ q.on('end', async function () {
       browser[sequenceName][browserName].browser.close()
     }
   }
-  better.line(configuration.setup.executablePath + ' ' + data.baseUrl + path.join( 'Html', 'index.html'))
+  let openCommand = 'xdg-open'
+  switch (os.plattform) {
+    case 'darwin':
+      openCommand = 'open'
+      break
+    case 'win32':
+      openCommand = 'start'
+      break
+  }
+  better.line(openCommand + ' ' + data.baseUrl + path.join('Html', 'index.html'))
 })
 
-function run () {
+function run() {
   if (options.sequence === '_all_') {
     for (var key in configuration.sequences) {
       sequencesNames.push(key)
     }
   } else {
-    options.sequence.split(',').forEach((sequence)=>
+    options.sequence.split(',').forEach((sequence) =>
       sequencesNames.push(sequence)
     )
   }
