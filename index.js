@@ -13,6 +13,9 @@ const configurationHelper = require('./lib/configurationHelper')(projectDir, dif
 const configuration = configurationHelper.configuration()
 const options = configurationHelper.options(configuration)
 
+require('events').EventEmitter.defaultMaxListeners = configuration.setup.maxListeners;
+
+
 let data = {
   'baseUrl': configuration.setup.baseUrl ? configuration.setup.baseUrl : (path.resolve(configuration.setup.documentRoot) + '/'),
   'projectPath': projectDir,
