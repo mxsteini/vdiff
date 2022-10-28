@@ -63,7 +63,7 @@ q.on('end', async function () {
       browser[sequenceName][browserName].browser.close()
     }
   }
-  better.line('google-chrome ' + data.baseUrl + path.join( 'Html', 'index.html'))
+  better.line(configuration.setup.executablePath + ' ' + data.baseUrl + path.join( 'Html', 'index.html'))
 })
 
 function run () {
