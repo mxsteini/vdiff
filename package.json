@@ -1,6 +1,6 @@
 {
   "name": "vdiff",
-  "version": "1.8.1",
+  "version": "1.9.1",
   "bin": {
     "vdiff": "bin/vdiff.js"
   },
@@ -10,7 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mxsteini/vdiff.git"
+    "url": "git+https://github.com/mxsteini/vdiff.git"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "better-logging": "^5.0.0",
@@ -18,12 +21,12 @@
     "dotenv": "^16.0.0",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.1",
-    "jimp": "^0.22.8",
+    "jimp": "^0.3.11",
     "load-json-file": "^6.2.0",
     "minimist": "^1.2.8",
     "mustache": "^4.2.0",
     "prompt": "^1.3.0",
-    "puppeteer": "^20.9.0",
+    "puppeteer": "^22.12.0",
     "queue": "^6.0.1",
     "simplecrawler": "^1.1.9",
     "sitemap-xml-parser": "^0.0.2",
