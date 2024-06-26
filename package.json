@@ -1,6 +1,6 @@
 {
   "name": "vdiff",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "bin": {
     "vdiff": "bin/vdiff.js"
   },
