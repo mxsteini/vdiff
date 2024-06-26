@@ -162,7 +162,14 @@ NODE_URL
 NODE_EXECUTABLE_PATH
 NODE_MAX_LISTENERS
 
+# Test
+```bash
+bin/vdiff.js
+bin/vdiff.js --mode pdf
+bin/vdiff.js --mode crawl --url https://www.monobloc.de --depth 1 --sequenceName mono_crawl
+bin/vdiff.js --mode sitemap --url https://www.monobloc.de/sitemap.xml --depth 3 --sequenceName mono_sitemap
 
+```
 ## DIRECTORIES
 
 * sequences \

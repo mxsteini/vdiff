@@ -1,6 +1,7 @@
 const queue = require('queue')
 const path = require('path')
 const os = require('os')
+const process = require('process');
 const better = require('./lib/logger')
 require('dotenv').config()
 
@@ -16,6 +17,8 @@ const options = configurationHelper.options(configuration)
 
 require('events').EventEmitter.defaultMaxListeners = configuration.setup.maxListeners
 
+
+process.removeAllListeners('warning');
 
 let data = {
   'baseUrl': configuration.setup.baseUrl ? configuration.setup.baseUrl : (path.resolve(configuration.setup.documentRoot) + '/'),
