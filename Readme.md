@@ -47,14 +47,8 @@ An array that contains an action, action data and waitFor
 
 # Installation
 ```bash
-# init your project
-npm init
-
 # using https
-npm i -P git+https://github.com/mxsteini/vdiff.git
-
-# using ssh
-npm i -P git+ssh://git@github.com/mxsteini/vdiff.git
+npm i mst-vdiff
 ```
 # Quick start
 
@@ -64,21 +58,19 @@ For review have a look to this demo <http://www.michaelstein-itb.de/vdiff/Html/i
 If you want to install this tool local, use the following
 ## render html
 ```bash
-npm init -y
-npm i -P git+https://github.com/mxsteini/vdiff.git
 cp ./node_modules/vdiff/resources/misc/configuration.demo.json configuration.json
-./node_modules/vdiff/bin/vdiff.js
+npx vdiff
 google-chrome vdiff/Html/index.html
 ```
 
 ## render pdf
 ```bash
-./node_modules/vdiff/bin/vdiff.js --mode pdf
+npx vdiff --mode pdf
 ```
 
 # Usage
 ```bash
-./node_modules/vdiff/bin/vdiff.js [options]
+npx vdiff [options]
 ```
 
 ## Configuration
@@ -164,10 +156,10 @@ NODE_MAX_LISTENERS
 
 # Test
 ```bash
-bin/vdiff.js
-bin/vdiff.js --mode pdf
-bin/vdiff.js --mode crawl --url https://www.monobloc.de --depth 1 --sequenceName mono_crawl
-bin/vdiff.js --mode sitemap --url https://www.monobloc.de/sitemap.xml --depth 3 --sequenceName mono_sitemap
+npx vdiff
+npx vdiff --mode pdf
+npx vdiff --mode crawl --url https://www.monobloc.de --depth 1 --sequenceName mono_crawl
+npx vdiff --mode sitemap --url https://www.monobloc.de/sitemap.xml --depth 3 --sequenceName mono_sitemap
 
 ```
 ## DIRECTORIES
