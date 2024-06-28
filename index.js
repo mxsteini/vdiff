@@ -1,8 +1,8 @@
 const queue = require('queue')
 const path = require('path')
 const os = require('os')
-const process = require('process');
-const better = require('./lib/logger')
+const Sentry = require("@sentry/node");
+
 require('dotenv').config()
 
 const projectDir = process.cwd()
@@ -10,10 +10,26 @@ const diffToolDir = path.dirname(__filename)
 const resourcesDir = path.join(diffToolDir, 'resources')
 const templatesDir = path.join(resourcesDir, 'templates')
 
-
 const configurationHelper = require('./lib/configurationHelper')(projectDir, diffToolDir)
 const configuration = configurationHelper.configuration()
 const options = configurationHelper.options(configuration)
+
+const logLevels = ["debug", "log", "warn", "error", "none"];
+if (configuration.setup.sentry && configuration.setup.sentry.cdnurl) {
+
+  global.logLevel = options.debug;
+  const Sentry = require("@sentry/node");
+
+  Sentry.init({
+    dsn: configuration.setup.sentry.cdnurl,
+  });
+
+  Sentry.addIntegration(Sentry.captureConsoleIntegration({levels: ['error']}));
+
+} else {
+  require('better-logging')(console);
+  console.logLevel = logLevels.indexOf(options.debug)
+}
 
 require('events').EventEmitter.defaultMaxListeners = configuration.setup.maxListeners
 
@@ -33,7 +49,7 @@ const sitemap = require('./lib/sitemap')(configuration, options, projectDir)
 const crawler = require('./lib/crawler')(configuration, options, projectDir)
 
 const pdf = require('./lib/pdf')(templatesDir, data, templateHelper)
-const screenshot = require('./lib/screenshot')(configuration, options, templateHelper)
+const screenshot = require('./lib/screenshot')(configuration, options, templateHelper, console)
 
 
 // Error.stackTraceLimit = options.debug
@@ -46,7 +62,7 @@ let q = queue()
 q.concurrency = options.conc
 q.autostart = 1
 q.on('success', function () {
-  better.info('remaining: ' + q.length)
+  console.log('remaining: ' + q.length)
 })
 q.on('end', async function () {
   if (options.sequence === '_all_') {
@@ -61,7 +77,7 @@ q.on('end', async function () {
   let tempDir = path.resolve(configuration.setup.documentRoot, 'Html')
   templateHelper.createDiffList(tempDir, templatesDir, browserNames, data, sequencesNames)
 
-  better.info('runtests - ', 'finished')
+  console.log('runtests - ', 'finished')
   for (let sequenceName of sequencesNames) {
     for (let browserName of configuration.sequences[sequenceName].browser) {
       browser[sequenceName][browserName].browser.close()
@@ -76,7 +92,7 @@ q.on('end', async function () {
       openCommand = 'start'
       break
   }
-  better.line(openCommand + ' ' + data.baseUrl + path.join('Html', 'index.html'))
+  global.console.log(openCommand + ' ' + data.baseUrl + path.join('Html', 'index.html'))
 })
 
 function run() {

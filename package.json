@@ -16,6 +16,8 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@sentry/node": "^8.13.0",
+    "@sentry/profiling-node": "^8.13.0",
     "better-logging": "^5.0.0",
     "concat": "^1.0.3",
     "dotenv": "^16.0.0",
