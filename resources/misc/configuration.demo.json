@@ -2,7 +2,9 @@
   "setup": {
     "baseUrl": "",
     "documentRoot": "vdiff",
-    "example_executablePath": "/usr/bin/google-chrome"
+    "example_executablePath": "/usr/bin/google-chrome",
+    "timeout": 3000,
+    "waitUntil": "networkidle0"
   },
   "default": {
     "browser": [
