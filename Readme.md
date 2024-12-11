@@ -138,21 +138,34 @@ Contains sequences
 Contains sequences
 
 ## .env
-NODE_CONFIGURATION
-NODE_SKIP_TARGET
-NODE_CONC
-NODE_MODE
-NODE_BROWSER
-NODE_SEQUENCE
-NODE_TARGET1
-NODE_TARGET2
-NODE_DEBUG
-NODE_DEPTH
-NODE_SEQUENCE_NAME
-NODE_OUTPUT
-NODE_URL
-NODE_EXECUTABLE_PATH
-NODE_MAX_LISTENERS
+You can set the following environment variables to override the default values:
+NODE_CONFIGURATION: path to configuration.json
+
+NODE_SKIP_TARGET: do not open the target in sequence
+
+NODE_CONC: number of browsers to open (beware of DoS)
+
+NODE_MODE: mode of the tool
+
+NODE_BROWSER: which browser to use in the sequence (e.g. fullpage, ipad, iphone)
+
+NODE_SEQUENCE: sequence to run
+
+NODE_TARGET1: target to run
+
+NODE_TARGET2: target to run
+
+NODE_DEBUG: debug level
+
+NODE_DEPTH: depth of the crawl
+
+NODE_OUTPUT: output mode
+
+NODE_URL: url to crawl
+
+NODE_EXECUTABLE_PATH: path to browser
+
+NODE_MAX_LISTENERS: max listeners for puppeteer
 
 # Test
 ```bash
