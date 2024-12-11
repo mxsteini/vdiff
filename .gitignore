@@ -7,3 +7,5 @@ sequences
 .env
 package-lock.json
 
+Dockerfile
+vdiff.Dockerfile
