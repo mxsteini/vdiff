@@ -87,7 +87,7 @@ After configuring configuration.json for your needs, get a copy test.yaml and pu
 
 **crawl**: crawl an url to create a sequence. Requires option is --url. Optional parameters are --sequenceName, --depth
 
-**sitemap**: fetch the given url, extract the paths and write in down in the given (--sequenceName) file. Requires option is --url. Optional parameters are --sequenceName, --depth \
+**sitemap**: fetch the given url, extract the paths and write in down in the given (--sequenceName) file. Requires option is --url. Optional parameters are --sequenceName, --depth
 
 **--target1** string
 
